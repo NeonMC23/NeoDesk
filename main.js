@@ -112,7 +112,7 @@ const weatherIcon = document.getElementById("weather-icon");
 const weatherInput = document.getElementById("weather-input");
 const weatherSave = document.getElementById("weather-save");
 
-// 🔑 Ta clé API OpenWeatherMap (gratuite à créer sur https://openweathermap.org/)
+// API OpenWeatherMap (https://openweathermap.org/)
 const API_KEY = "a968437efd031f23e6085207a6c4c552";
 
 let currentCity = localStorage.getItem("weatherCity") || "Paris";
