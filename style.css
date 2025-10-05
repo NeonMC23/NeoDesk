@@ -1,507 +1,85 @@
-/* === RESET & BASE === */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: 'Segoe UI', sans-serif;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 0 20px;
-  transition: background 0.4s ease, color 0.4s ease;
-}
-
-body.dark {
-  background: #121212;
-  color: #eee;
-}
-
-body.light {
-  background: #f0f2f5;
-  color: #222;
-}
-
-/* === HEADER === */
-header {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-}
-
-#theme-toggle {
-  background: none;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 16px;
-  color: inherit;
-  transition: background 0.3s ease, transform 0.2s ease;
-}
-
-#theme-toggle:hover {
-  background: rgba(255, 255, 255, 0.1);
-  transform: scale(1.05);
-}
-
-/* === MAIN CONTAINER === */
-.container {
-  text-align: center;
-  width: 100%;
-  max-width: 600px;
-}
-
-h1 {
-  font-size: 36px;
-  margin-bottom: 30px;
-}
-
-/* === SEARCH BOX === */
-.search-box {
-  display: flex;
-  width: 100%;
-  max-width: 500px;
-  height: 50px;
-  margin: 0 auto 20px;
-  border-radius: 8px;
-  overflow: hidden;
-  background: var(--search-bg, #1e1e1e);
-  box-shadow: var(--search-shadow, 0 0 12px #444);
-  transition: box-shadow 0.3s ease, background 0.3s ease;
-}
-
-body.light .search-box {
-  --search-bg: #fff;
-  --search-shadow: 0 0 12px #ccc;
-}
-
-.search-box input {
-  flex: 1;
-  padding: 0 16px;
-  font-size: 16px;
-  border: none;
-  outline: none;
-  background: transparent;
-  color: inherit;
-}
-
-.search-box input::placeholder {
-  color: #aaa;
-}
-
-.search-box button {
-  width: 60px;
-  background: #4CAF50;
-  color: #fff;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-.search-box button:hover {
-  background: #45a049;
-}
-
-/* === FOOTER === */
-footer {
-  position: absolute;
-  bottom: 20px;
-  font-size: 13px;
-  text-align: center;
-}
-
-footer a {
-  color: #4CAF50;
-  text-decoration: none;
-}
-
-/* === DATE === */
-#date {
-  font-size: 14px;
-  margin-top: 10px;
-}
-
-/* === TERMINAL (nouveau style) === */
-#terminal {
-  position: fixed;
-  inset: 0;
-  background: radial-gradient(circle at center, #0a0a0a 0%, #000 100%);
-  color: #00ff7f;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  z-index: 999;
-  font-family: "JetBrains Mono", "Consolas", monospace;
-  overflow: hidden;
-  transition: opacity 0.4s ease, transform 0.4s ease;
-  transform: scale(1);
-}
-
-/* Effet scanlines rétro */
-#terminal::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(
-    0deg,
-    rgba(255, 255, 255, 0.03),
-    rgba(255, 255, 255, 0.03) 1px,
-    transparent 2px,
-    transparent 3px
-  );
-  pointer-events: none;
-  animation: scanline 4s linear infinite;
-  opacity: 0.15;
-}
-
-@keyframes scanline {
-  from { background-position-y: 0; }
-  to { background-position-y: 100%; }
-}
-
-/* Sortie terminal */
-.terminal-container {
-  display: flex;
-  flex-direction: column;
-  width: 80vw;
-  max-width: 900px;
-  height: 70vh;
-  background: rgba(0, 0, 0, 0.6);
-  border: 1px solid #00ff7f;
-  border-radius: 10px;
-  padding: 20px;
-  overflow: hidden;
-  box-shadow: 0 0 25px rgba(0, 255, 127, 0.3);
-  position: relative;
-}
-
-/* Zone de texte */
-#terminal-output {
-  flex: 1;
-  overflow-y: auto;
-  padding: 10px;
-  margin-bottom: 10px;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-}
-
-/* Ligne de saisie */
-.terminal-input-line {
-  display: flex;
-  align-items: center;
-  padding: 8px;
-  background: rgba(0, 255, 127, 0.05);
-  border-top: 1px solid rgba(0, 255, 127, 0.2);
-  border-radius: 6px;
-}
-
-/* Prompt */
-.prompt {
-  color: #00ff7f;
-  margin-right: 10px;
-  font-weight: bold;
-}
-
-/* Zone de saisie */
-#terminal-input {
-  flex: 1;
-  background: transparent;
-  border: none;
-  outline: none;
-  color: #00ff7f;
-  font-family: inherit;
-  font-size: 18px;
-  caret-color: #00ff7f;
-}
-
-/* Curseur clignotant */
-#terminal-input::after {
-  content: "";
-  display: inline-block;
-  width: 8px;
-  height: 18px;
-  background: #00ff7f;
-  margin-left: 2px;
-  animation: blink 1s step-start infinite;
-}
-
-@keyframes blink {
-  50% { opacity: 0; }
-}
-
-/* Ligne affichée dans le terminal */
-.terminal-line {
-  color: #00ff7f;
-  font-size: 17px;
-  margin-bottom: 5px;
-  text-shadow: 0 0 5px #00ff7f;
-  animation: appear 0.2s ease;
-}
-
-@keyframes appear {
-  from { opacity: 0; transform: translateY(5px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* Effet fermeture/transition */
-.hidden#terminal {
-  opacity: 0;
-  transform: scale(1.05);
-}
-
-/* Barre de défilement stylée */
-#terminal-output::-webkit-scrollbar {
-  width: 8px;
-}
-#terminal-output::-webkit-scrollbar-thumb {
-  background: rgba(0, 255, 127, 0.3);
-  border-radius: 4px;
-}
-#terminal-output::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 255, 127, 0.5);
-}
-
-/* === WEATHER WIDGET === */
-#weather-widget {
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  z-index: 10;
-  font-family: 'Segoe UI', sans-serif;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  transition: all 0.3s ease;
-}
-
-#weather-display {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border-radius: 8px;
-  padding: 8px 12px;
-  cursor: pointer;
-  transition: background 0.3s ease, box-shadow 0.3s ease;
-}
-
-body.light #weather-display {
-  background: rgba(210, 210, 210, 0.8);
-  color: #222;
-}
-
-#weather-display:hover {
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
-}
-
-#weather-city {
-  font-weight: 600;
-  font-size: 14px;
-}
-
-#weather-temp {
-  font-size: 14px;
-  opacity: 0.9;
-}
-
-#weather-icon {
-  width: 28px;
-  height: 28px;
-}
-
-/* --- SETTINGS MENU --- */
-#weather-settings {
-  margin-top: 8px;
-  background: rgba(0, 0, 0, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  padding: 8px;
-  display: flex;
-  gap: 6px;
-  transition: all 0.3s ease;
-}
-
-body.light #weather-settings {
-  background: rgba(255, 255, 255, 0.9);
-  border-color: #ccc;
-}
-
-#weather-settings input {
-  background: rgba(255, 255, 255, 0.1);
-  border: none;
-  border-radius: 6px;
-  padding: 5px 10px;
-  color: inherit;
-  outline: none;
-  flex: 1;
-  transition: background 0.3s ease;
-}
-
-body.light #weather-settings input {
-  background: rgba(0, 0, 0, 0.05);
-}
-
-#weather-settings button {
-  background: #4CAF50;
-  border: none;
-  color: white;
-  border-radius: 6px;
-  padding: 5px 10px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-#weather-settings button:hover {
-  background: #45a049;
-}
-
-.hidden {
-  display: none !important;
-}
-
-/* === BACKGROUND WIDGET === */
-#bg-widget {
-  position: fixed;
-  top: 20px;
-  right: 60px;
-  z-index: 100;
-}
-
-#bg-toggle {
-  background: transparent;
-  border: 0px solid rgba(255, 255, 255, 0.2);
-  color: inherit;
-  font-size: 16px;
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 10px;
-  backdrop-filter: blur(10px);
-  transition: background 0.3s ease, transform 0.2s ease;
-}
-
-#bg-toggle:hover {
-  background: rgba(255, 255, 255, 0.15);
-  transform: scale(1.1);
-}
-
-/* Menu */
-#bg-menu {
-  position: absolute;
-  top: 45px;
-  right: 0;
-  background: rgba(25, 25, 25, 0.75);
-  backdrop-filter: blur(12px);
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  width: 250px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-  animation: fadeIn 0.3s ease;
-}
-
-body.light #bg-menu {
-  background: rgba(255, 255, 255, 0.8);
-}
-
-.bg-menu-header {
-  text-align: center;
-  font-weight: bold;
-  font-size: 14px;
-  color: #fff;
-  opacity: 0.9;
-}
-
-body.light .bg-menu-header {
-  color: #222;
-}
-
-.bg-option {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  font-size: 13px;
-  color: inherit;
-}
-
-.file-btn {
-  display: inline-block;
-  padding: 6px 10px;
-  background: linear-gradient(135deg, #4CAF50, #43A047);
-  color: #fff;
-  border-radius: 8px;
-  cursor: pointer;
-  text-align: center;
-  transition: transform 0.2s ease, opacity 0.3s ease;
-}
-
-.file-btn:hover {
-  transform: scale(1.05);
-  opacity: 0.9;
-}
-
-.file-name {
-  font-size: 12px;
-  margin-top: 3px;
-  opacity: 0.8;
-}
-
-
-#bg-menu input[type="text"],
-#bg-menu input[type="file"] {
-  background: rgba(255, 255, 255, 0.1);
-  border: none;
-  border-radius: 8px;
-  padding: 6px 8px;
-  color: inherit;
-  outline: none;
-  font-size: 13px;
-  transition: background 0.2s ease;
-}
-
-#bg-menu input[type="text"]:focus {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-.bg-buttons {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 5px;
-}
-
-#bg-menu button {
-  background: linear-gradient(135deg, #4CAF50, #43A047);
-  border: none;
-  color: white;
-  font-size: 13px;
-  padding: 6px 10px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: transform 0.2s ease, opacity 0.3s ease;
-}
-
-#bg-menu button:hover {
-  transform: scale(1.05);
-  opacity: 0.9;
-}
-
-#bg-menu button.danger {
-  background: linear-gradient(135deg, #e53935, #c62828);
-}
-
-.bg-divider {
-  height: 1px;
-  background: rgba(255, 255, 255, 0.1);
-  margin: 4px 0;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NeoDesk</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="dark">
+
+  <!-- === HEADER === -->
+  <header>
+    <button id="theme-toggle" title="Toggle theme">🌤</button>
+  </header>
+
+  <!-- === BACKGROUND WIDGET === -->
+  <div id="bg-widget">
+    <button id="bg-toggle" title="Change background">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M4 4h16v16H4V4zm2 2v12h12V6H6zm2 2h8v8H8V8zm10 10H6v2h12v-2z"/>
+      </svg>
+    </button>
+    <div id="bg-menu" class="hidden">
+      <div class="bg-menu-header">Background Settings</div>
+      <label class="bg-option">
+        <span>Upload image</span>
+        <input type="file" id="bg-upload" accept="image/*" hidden />
+        <span class="file-btn">Choose file</span>
+        <span class="file-name" id="file-name">No file chosen</span>
+      </label>
+      <div class="bg-divider"></div>
+      <label class="bg-option">
+        <span>From URL</span>
+        <input type="text" id="bg-url" placeholder="https://example.com/image.jpg" />
+      </label>
+      <div class="bg-divider"></div>
+      <div class="bg-buttons">
+        <button id="bg-apply">Apply</button>
+        <button id="bg-reset" class="danger">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- === WEATHER WIDGET === -->
+  <div id="weather-widget">
+    <div id="weather-display">
+      <span id="weather-city">Loading...</span>
+      <span id="weather-temp"></span>
+      <img id="weather-icon" src="" alt="Weather Icon" />
+    </div>
+    <div id="weather-settings" class="hidden">
+      <input type="text" id="weather-input" placeholder="Enter city..." />
+      <button id="weather-save">Save</button>
+    </div>
+  </div>
+
+  <!-- === MAIN CONTAINER === -->
+  <main class="container">
+    <h1 class="fade-in">NeoDesk</h1>
+    <form class="search-box fade-in" action="https://www.google.com/search" method="get">
+      <input type="text" name="q" placeholder="Enter your research..." autofocus />
+      <button type="submit">🔍︎</button>
+    </form>
+    <p id="date" class="fade-in-small"></p>
+  </main>
+
+  <!-- === FOOTER === -->
+  <footer class="fade-in-small">
+    Made by Neon – <a href="https://github.com/">GitHub Pages</a>
+  </footer>
+
+  <!-- === TERMINAL === -->
+  <div id="terminal" class="hidden">
+    <div class="terminal-container">
+      <div id="terminal-output"></div>
+      <div class="terminal-input-line">
+        <span class="prompt">&gt;</span>
+        <input type="text" id="terminal-input" placeholder="Type your search..." autocomplete="off" />
+      </div>
+    </div>
+  </div>
+
+  <script src="main.js"></script>
+</body>
+</html>
