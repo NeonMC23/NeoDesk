@@ -112,7 +112,7 @@ const weatherIcon = document.getElementById("weather-icon");
 const weatherInput = document.getElementById("weather-input");
 const weatherSave = document.getElementById("weather-save");
 
-// API OpenWeatherMap (https://openweathermap.org/)
+// 🔑 Ta clé API OpenWeatherMap (gratuite à créer sur https://openweathermap.org/)
 const API_KEY = "a968437efd031f23e6085207a6c4c552";
 
 let currentCity = localStorage.getItem("weatherCity") || "Paris";
@@ -224,3 +224,98 @@ document.addEventListener("click", (e) => {
     bgMenu.classList.add("hidden");
   }
 });
+
+/* === FAVORITES WIDGET === */
+const favToggle = document.getElementById("fav-toggle");
+const favPanel = document.getElementById("fav-panel");
+const favAdd = document.getElementById("fav-add");
+const favList = document.getElementById("fav-list");
+const favEditor = document.getElementById("fav-editor");
+const favName = document.getElementById("fav-name");
+const favUrl = document.getElementById("fav-url");
+const favColor = document.getElementById("fav-color");
+const favSave = document.getElementById("fav-save");
+const favCancel = document.getElementById("fav-cancel");
+
+let favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
+let editingIndex = null;
+
+// 🔄 Afficher la liste
+function renderFavorites() {
+  favList.innerHTML = "";
+  favorites.forEach((fav, i) => {
+    const item = document.createElement("div");
+    item.className = "fav-item";
+    item.innerHTML = `
+      <div class="info">
+        <div class="fav-color-dot" style="background: ${fav.color}"></div>
+        <span class="name">${fav.name}</span>
+      </div>
+      <div class="fav-actions">
+        <button class="edit">✎</button>
+        <button class="delete">🗑</button>
+      </div>
+    `;
+    item.querySelector(".info").addEventListener("click", () => {
+      window.open(fav.url, "_blank");
+    });
+    item.querySelector(".edit").addEventListener("click", () => editFavorite(i));
+    item.querySelector(".delete").addEventListener("click", () => deleteFavorite(i));
+    favList.appendChild(item);
+  });
+}
+
+renderFavorites();
+
+// ⭐ Toggle panneau
+favToggle.addEventListener("click", () => {
+  favPanel.classList.toggle("hidden");
+});
+
+// ➕ Ajouter un favori
+favAdd.addEventListener("click", () => {
+  editingIndex = null;
+  favName.value = "";
+  favUrl.value = "";
+  favColor.value = "#4CAF50";
+  favEditor.classList.remove("hidden");
+});
+
+// 💾 Sauvegarder
+favSave.addEventListener("click", () => {
+  const newFav = {
+    name: favName.value.trim() || "Unnamed",
+    url: favUrl.value.trim() || "#",
+    color: favColor.value
+  };
+  if (editingIndex !== null) favorites[editingIndex] = newFav;
+  else favorites.push(newFav);
+
+  localStorage.setItem("favorites", JSON.stringify(favorites));
+  favEditor.classList.add("hidden");
+  renderFavorites();
+});
+
+// ❌ Annuler
+favCancel.addEventListener("click", () => {
+  favEditor.classList.add("hidden");
+});
+
+// ✏️ Modifier
+function editFavorite(index) {
+  const fav = favorites[index];
+  editingIndex = index;
+  favName.value = fav.name;
+  favUrl.value = fav.url;
+  favColor.value = fav.color;
+  favEditor.classList.remove("hidden");
+}
+
+// 🗑 Supprimer
+function deleteFavorite(index) {
+  if (confirm("Delete this favorite?")) {
+    favorites.splice(index, 1);
+    localStorage.setItem("favorites", JSON.stringify(favorites));
+    renderFavorites();
+  }
+}
