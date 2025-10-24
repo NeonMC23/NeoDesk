@@ -54,6 +54,33 @@
     </div>
   </div>
 
+  <!-- === FAVORITES WIDGET === -->
+  <div id="favorites-widget">
+    <button id="fav-toggle" title="Open favorites">✦</button>
+
+    <div id="fav-panel" class="hidden">
+      <div class="fav-header">
+        <h3>Favorites</h3>
+        <button id="fav-add">✚</button>
+      </div>
+
+      <div id="fav-list"></div>
+
+      <div id="fav-editor" class="hidden">
+        <input type="text" id="fav-name" placeholder="Name">
+        <input type="url" id="fav-url" placeholder="https://example.com">
+        <label for="fav-color">Color:</label>
+        <input type="color" id="fav-color" value="#4CAF50">
+        <div class="fav-editor-buttons">
+          <button id="fav-save">Save</button>
+          <button id="fav-cancel" class="danger">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
   <!-- === MAIN CONTAINER === -->
   <main class="container">
     <h1 class="fade-in">NeoDesk</h1>
