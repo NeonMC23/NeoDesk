@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════
-   NeoDesk V4 — Distract Terminal
+   NeoDesk v4 — Distract Terminal
    Full-screen mini programs: Matrix, Conway
    ═══════════════════════════════════════════ */
 
@@ -56,7 +56,7 @@
     }, 50);
   };
 
-  /* ========== 1. MATRIX — Full-screen, kanji, optimized ========== */
+  /* ========== 1. MATRIX — Full-screen, half-width katakana + Latin ========== */
   NeoDesk.prototype._launchMatrix = function() {
     this._distractRunning = true;
     var out = document.getElementById('distract-output');
@@ -64,13 +64,15 @@
     out.style.cssText = 'overflow:hidden;background:#000;';
     out.style.fontSize = '14px';
     out.style.lineHeight = '1.3';
+    out.style.fontFamily = "'JetBrains Mono', 'Consolas', 'Courier New', monospace";
 
     var cols = Math.floor(window.innerWidth / 13);
     var rows = Math.floor(window.innerHeight / 19);
-    if (cols < 30) cols = 30;
-    if (rows < 15) rows = 15;
+    if (cols < 40) cols = 40;
+    if (rows < 20) rows = 20;
 
-    var chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲンガギグゲゴザジズゼゾダヂヅデドバビブベボパピプペポ0123456789天地玄黄宇宙洪荒日月盈昃辰宿列張寒来暑往秋收冬蔵';
+    // Half-width katakana + Latin = properly monospace
+    var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜｦﾝ';
 
     var drops = [], speeds = [];
     for (var i = 0; i < cols; i++) {
@@ -119,10 +121,10 @@
       self._distractAnimId = setTimeout(anim, 90);
     };
     anim();
-    this._dprint('[Matrix running. Kanji rain. Type "exit" to stop.]');
+    this._dprint('[Matrix running. Half-width katakana rain. Type "exit" to stop.]');
   };
 
-  /* ========== 2. CONWAY — Full-screen with color control ========== */
+  /* ========== 2. CONWAY — Full-screen with speed + color ========== */
   NeoDesk.prototype._launchConway = function() {
     this._distractRunning = true;
     var out = document.getElementById('distract-output');
@@ -165,7 +167,7 @@
     var render = function() {
       ctx.fillStyle = '#000'; ctx.fillRect(0, 0, canvas.width, canvas.height);
       for (var r = 0; r < ROWS; r++) for (var c = 0; c < COLS; c++) {
-        if (grid[r][c]) { ctx.fillStyle = cellColor; ctx.fillRect(c * cellSize, r * cellSize, cellSize - 0, cellSize - 0); }
+        if (grid[r][c]) { ctx.fillStyle = cellColor; ctx.fillRect(c * cellSize, r * cellSize, cellSize, cellSize); }
       }
     };
 
@@ -190,7 +192,7 @@
       + '<span id="conway-faster" style="cursor:pointer;opacity:0.6">Fast &#9654;</span>'
       + '<span style="opacity:0.2">|</span>'
       + '<span id="conway-color-prev" style="cursor:pointer;opacity:0.6">&#9664; Color</span>'
-      + '<span id="conway-color-display" style="opacity:0.8;min-width:60px;text-align:center;font-size:12px">Green</span>'
+      + '<span id="conway-color-display" style="opacity:0.8;min-width:64px;text-align:center;font-size:12px">Green</span>'
       + '<span id="conway-color-next" style="cursor:pointer;opacity:0.6">Color &#9654;</span>'
       + '</div>';
 
@@ -219,7 +221,7 @@
           sp = document.getElementById('conway-speed-display'),
           cp = document.getElementById('conway-color-prev'),
           cn = document.getElementById('conway-color-next'),
-          cd = document.getElementById('conway-color-display');
+          cdisp = document.getElementById('conway-color-display');
 
       if (t) t.onclick = function(e) {
         e.stopPropagation();
@@ -240,13 +242,13 @@
       if (cp) cp.onclick = function(e) {
         e.stopPropagation(); colorIdx = (colorIdx - 1 + colors.length) % colors.length;
         cellColor = colors[colorIdx].color;
-        if (cd) cd.textContent = colors[colorIdx].name;
+        if (cdisp) cdisp.textContent = colors[colorIdx].name;
         render();
       };
       if (cn) cn.onclick = function(e) {
         e.stopPropagation(); colorIdx = (colorIdx + 1) % colors.length;
         cellColor = colors[colorIdx].color;
-        if (cd) cd.textContent = colors[colorIdx].name;
+        if (cdisp) cdisp.textContent = colors[colorIdx].name;
         render();
       };
     }, 50);
