@@ -1,35 +1,30 @@
-# NeoDesk ✨
+# NeoDesk v3 ✨
 
-> A modern, beautiful new tab dashboard with terminal, weather, search, favorites & settings.
-
-NeoDesk transforms your browser's new tab page into a powerful, customizable dashboard featuring a live clock, weather widget, quick links, a built-in terminal, and a full settings panel — all saved to your browser's localStorage.
+> **NeoDesk** transforms your browser's new tab into a powerful, beautiful, and deeply customizable dashboard — with a live clock, real-time weather, quick links, a built-in terminal, and a full settings panel. Everything is saved to `localStorage`.
 
 **[🌐 Live Demo](https://neonmc23.github.io/NeoDesk/)**
 
 ---
 
-## ✨ Features
+## ✨ Features (v3)
 
-| Feature | Details |
-|---------|---------|
-| 🕐 **Live Clock** | Analog-style digital clock with seconds, 12h/24h support |
-| 🌤️ **Weather** | Real-time weather from OpenWeatherMap, configurable city |
-| 🔍 **Smart Search** | Supports Google, DuckDuckGo, Bing, Brave, Yahoo — switch via Tab key |
-| 💻 **Terminal** | Press `Alt+T` for a full terminal with 15+ commands |
-| 🔗 **Favorites** | Quick links grid with colors, edit/delete, drag-free |
-| 🎨 **Themes** | Dark, Light, and System (follows OS preference) |
-| 🖼️ **Backgrounds** | 7 gradient presets + custom image upload/URL |
-| 🔲 **Background Blur** | Adjustable blur overlay for readability |
-| 🧩 **Widget Toggle** | Show/hide weather, date, quotes, favorites |
-| 💾 **LocalStorage** | All settings persist across sessions |
-| 📱 **Responsive** | Fully mobile-friendly with adaptive layout |
-| 🎯 **Keyboard Shortcuts** | `/` focus search, `Tab` cycle engines, `Alt+T` terminal, `Esc` close panels |
+| Category | Details |
+|----------|---------|
+| 🕐 **Live Clock** | Gradient or solid color, customizable start/end gradient colors, 12h/24h, seconds toggle |
+| 🌤️ **Weather** | Real-time from OpenWeatherMap, °C/°F, city search |
+| 🔍 **Smart Search** | Google, DuckDuckGo, Bing, Brave, Yahoo, **Startpage** — switch via `Tab` or click, search chips for Images/Videos/News/Maps |
+| 💻 **Terminal** | Full-featured with 15+ commands (`/help`, `/weather`, `/theme`, `/g`, `/yt`, `/gh`, `/reddit`, `/todo`, `/map`, `/wiki`, `/time`, `/date`, `/clear`), customizable shortcut |
+| 🔗 **Quick Links** | Add/edit/delete with color picker, discreet ⋮ menu |
+| 🎨 **Themes** | Dark, Light, System (follows OS) |
+| 🖼️ **Backgrounds** | 7 gradient presets + custom image upload/URL + adjustable blur |
+| 🎛️ **Customization** | 16+ fonts, accent color (7 presets + picker), clock color (8 presets + custom gradient), interface colors (bg, card, text), font toggle for more options |
+| 💾 **Persistent** | All settings saved to `localStorage` |
+| 📱 **Responsive** | Fully mobile-friendly |
+| ⌨️ **Keyboard** | `/` focus search, `Tab` cycle engines, `Alt+T` (customizable) terminal, `Esc` close |
 
 ---
 
 ## 🚀 Quick Start
-
-### 1. Clone & Open
 
 ```bash
 git clone https://github.com/NeonMC23/NeoDesk.git
@@ -37,13 +32,7 @@ cd NeoDesk
 open index.html
 ```
 
-### 2. Set as New Tab Page
-
-**Chrome / Edge:**
-1. Install a new tab override extension (e.g. [Custom New Tab](https://chrome.google.com/webstore/detail/new-tab-override/fjcjgmepmojgkcfdhpngbnmjnfhppooh))
-2. Point it to: `file:///path/to/NeoDesk/index.html`
-
-> 💡 For a better experience, host the page locally or deploy to GitHub Pages.
+Set as browser new tab page using a new tab extension pointing to `index.html`.
 
 ---
 
@@ -51,10 +40,10 @@ open index.html
 
 | Key | Action |
 |-----|--------|
-| `/` | Focus search bar |
+| `/` | Focus search |
 | `Tab` | Cycle search engine |
 | `Enter` | Execute search |
-| `Alt+T` | Toggle terminal |
+| `Alt+T` (configurable) | Toggle terminal |
 | `Esc` | Close panels / terminal |
 
 ---
@@ -65,48 +54,59 @@ open index.html
 |---------|-------------|
 | `/g <query>` | Google Search |
 | `/yt <query>` | YouTube Search |
-| `/img <query>` | Google Images |
-| `/map <query>` | Google Maps |
+| `/img <query>` | Image Search |
+| `/map <query>` | Maps Search |
 | `/wiki <query>` | Wikipedia |
 | `/ddg <query>` | DuckDuckGo |
 | `/reddit <q>` | Reddit Search |
 | `/gh <query>` | GitHub Search |
 | `/s <query>` | Default Engine Search |
 | `/weather <city>` | Set weather city |
-| `/theme <mode>` | Set theme (dark / light / system) |
+| `/theme <mode>` | dark / light / system |
 | `/time` | Show current time |
 | `/date` | Show current date |
 | `/todo` | Open Todoist |
 | `/clear` | Clear terminal |
 | `/help` | Show all commands |
 
+Just type anything (no `/`) to directly search with your default engine.
+
 ---
 
-## ⚙️ Settings
+## ⚙️ Settings (Full Customization)
 
-All settings are saved to `localStorage` and persist between sessions.
-
-### Available Settings
-
+### Theme & Colors
 - **Theme**: Dark / Light / System
-- **Search Engine**: Google, DuckDuckGo, Bing, Brave, Yahoo
-- **Temperature**: Celsius / Fahrenheit
-- **Clock Format**: 12h / 24h
-- **Display Name**: Custom greeting name
-- **Background**: 7 gradient presets or custom image
-- **Background Blur**: 0–20px
-- **Widgets**: Show/hide weather, date, quotes, favorites
-- **Reset**: One-click reset to defaults
+- **Accent Color**: 7 presets (Forest, Blue, Purple, Coral, Gold, Pink, Teal) + custom picker
+- **Clock Color**: 8 presets + custom solid color + **fully customizable gradient** (pick start + end colors)
+- **Interface Colors**: Background, Card, Text — live preview
+
+### Fonts (16 options)
+| Basic | Advanced |
+|-------|----------|
+| Inter, Space Grotesk, Outfit, DM Sans, Plus Jakarta Sans, Manrope | Playfair Display, Fira Code, JetBrains Mono, Syne, Epilogue, Unbounded, Chillax, Cabinet Grotesk, Satoshi, General Sans, Segoe UI |
+
+### Search
+- 6 engines: Google, DuckDuckGo, Bing, Brave, Yahoo, **Startpage**
+- Search chips for Images, Videos, News, Maps
+- Smart mode detection per engine
+
+### Widgets
+- Weather, Date, Favorites, Quote, Search Tips — individually toggleable
+
+### Data
+- One-click **Reset All Settings**
 
 ---
 
-## 🛠️ Tech Stack
+## 📦 Tech Stack
 
-- Vanilla JavaScript (ES6+)
+- Vanilla JavaScript (ES6+ class-based)
 - CSS3 with custom properties, animations, backdrop-filter
 - HTML5 semantic markup
 - OpenWeatherMap API
-- Quotable API (with offline fallback)
+- Google Fonts (16 families)
+- localStorage persistence
 
 ---
 
@@ -114,25 +114,19 @@ All settings are saved to `localStorage` and persist between sessions.
 
 ```
 NeoDesk/
-├── index.html    # Main HTML structure
-├── style.css     # All styles (variables, themes, responsive)
-├── main.js       # Application logic (OOP, ES6 class)
-└── README.md     # This file
+├── index.html       # Main HTML
+├── style.css        # All styles (themes, responsive, animations)
+├── main.js          # Application logic (OOP, class NeoDesk)
+├── README.md        # This file
+├── icon.png         # Favicon
+└── icon/            # Search engine icons
+    ├── google.png
+    ├── duckduckgo.png
+    ├── bing.png
+    ├── brave.png
+    ├── yahoo.png
+    └── startpage.png
 ```
-
----
-
-## 🌐 Deployment
-
-### GitHub Pages
-
-```bash
-git push origin main
-```
-
-Then enable GitHub Pages in your repo settings → `main` branch → root folder.
-
-Your page will be live at: `https://<username>.github.io/NeoDesk/`
 
 ---
 
@@ -142,4 +136,4 @@ MIT © NeonMC23
 
 ---
 
-*Made with ❤️ and a lot of ☕*
+*Made with ❤️ and lots of ☕ — v3.0*

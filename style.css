@@ -253,7 +253,7 @@ body.has-bg #bg-overlay { background: transparent; }
   letter-spacing: -3px;
 }
 #clock-time.gradient {
-  background: linear-gradient(135deg, var(--text-primary), var(--accent));
+  background: linear-gradient(135deg, var(--clock-color-start, var(--text-primary)), var(--clock-color-end, var(--accent)));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -1266,7 +1266,7 @@ body.light #terminal-input { caret-color: var(--accent); }
 }
 .font-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(var(--accent-rgb),0.08); }
 .font-btn:not(.active):hover { background: var(--bg-hover); color: var(--text-primary); }
-.font-btn[data-font*="Space"] { font-family: 'Space Grotesk', sans-serif; }
+
 .font-btn[data-font*="Outfit"] { font-family: 'Outfit', sans-serif; }
 
 /* Engine chevron */
@@ -1375,3 +1375,44 @@ body.light #terminal-input { caret-color: var(--accent); }
   pointer-events: none;
 }
 #weather-widget, #top-right { position: relative; z-index: 1; }
+
+
+/* Font toggle button */
+.font-toggle-btn {
+  display: block;
+  width: 100%;
+  padding: 5px 10px;
+  margin-top: 5px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-xs);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 10px;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+.font-toggle-btn:hover {
+  color: var(--text-primary);
+  border-color: var(--border-hover);
+  background: var(--bg-hover);
+}
+
+/* Font-advanced initially hidden, shown on click */
+.font-advanced { margin-top: 5px; }
+
+/* Gradient custom area */
+.gradient-custom {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+.gradient-custom .setting-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-bottom: 3px;
+  margin-top: 4px;
+}
+.gradient-custom .setting-label:first-child { margin-top: 0; }

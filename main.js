@@ -84,6 +84,19 @@ class NeoDesk {
         modeUrl: (q, mode) => {
           return `https://search.yahoo.com/search?p=${encodeURIComponent(q)}`;
         }
+      },
+      startpage: {
+        url: 'https://www.startpage.com/do/dsearch?query=',
+        modes: {
+          default: '',
+          img: '',
+          video: '',
+          news: '',
+          maps: ''
+        },
+        modeUrl: (q, mode) => {
+          return 'https://www.startpage.com/do/dsearch?query=' + encodeURIComponent(q);
+        }
       }
     };
 
@@ -148,6 +161,8 @@ class NeoDesk {
       engineDropdown:  document.getElementById('engine-dropdown'),
       favGrid:         document.getElementById('fav-grid'),
       favAddBtn:       document.getElementById('fav-add-btn'),
+      favMenuBtn:      document.getElementById('fav-menu-btn'),
+      favMenuDrop:     document.getElementById('fav-menu-dropdown'),
       favEditor:       document.getElementById('fav-editor'),
       favName:         document.getElementById('fav-name'),
       favUrl:          document.getElementById('fav-url'),
@@ -191,6 +206,11 @@ class NeoDesk {
       accentHex:       document.getElementById('accent-hex'),
       clockPicker:     document.getElementById('clock-picker'),
       clockHex:        document.getElementById('clock-hex'),
+      gradientStart:   document.getElementById('gradient-start'),
+      gradientEnd:     document.getElementById('gradient-end'),
+      gradientStartHex: document.getElementById('gradient-start-hex'),
+      gradientEndHex:  document.getElementById('gradient-end-hex'),
+      gradientApply:   document.getElementById('gradient-apply'),
       toastContainer:  document.getElementById('toast-container'),
     };
 
@@ -199,6 +219,8 @@ class NeoDesk {
     this.engineOpts = document.querySelectorAll('.engine-opt');
     this.searchChips = document.querySelectorAll('.search-chip');
     this.fontBtns = document.querySelectorAll('.font-btn');
+    this.fontToggle = document.getElementById('font-toggle-btn');
+    this.fontAdvanced = document.getElementById('font-advanced');
     this.accentPresets = document.querySelectorAll('#accent-presets .color-preset');
     this.clockPresets = document.querySelectorAll('#clock-presets .color-preset');
     this.customOpts = document.querySelectorAll('.custom-select-opt');
@@ -230,6 +252,8 @@ class NeoDesk {
       showTips: true,
       accentColor: '#2ea043',
       clockColor: 'gradient',
+      gradientStart: '#f0f6fc',
+      gradientEnd: '#2ea043',
       fontFamily: "'Inter', sans-serif",
       weatherCity: 'Paris',
       shortcutKey: 't',
@@ -399,7 +423,15 @@ class NeoDesk {
     const ct = this.els.clockTime;
     if (!c || c === 'gradient') {
       ct.classList.remove('solid'); ct.classList.add('gradient');
+      const gs = this.settings.gradientStart || '#f0f6fc';
+      const ge = this.settings.gradientEnd || '#2ea043';
+      document.documentElement.style.setProperty('--clock-color-start', gs);
+      document.documentElement.style.setProperty('--clock-color-end', ge);
       if (this.els.clockHex) this.els.clockHex.textContent = 'Gradient';
+      if (this.els.gradientStart) this.els.gradientStart.value = gs;
+      if (this.els.gradientEnd) this.els.gradientEnd.value = ge;
+      if (this.els.gradientStartHex) this.els.gradientStartHex.textContent = gs;
+      if (this.els.gradientEndHex) this.els.gradientEndHex.textContent = ge;
     } else {
       ct.classList.remove('gradient'); ct.classList.add('solid');
       document.documentElement.style.setProperty('--clock-solid', c);
@@ -808,6 +840,15 @@ class NeoDesk {
     this.els.settingsOverlay.addEventListener('click', closeSettings);
 
     
+    
+    // Font toggle (show more)
+    if (this.fontToggle && this.fontAdvanced) {
+      this.fontToggle.addEventListener('click', () => {
+        const hidden = this.fontAdvanced.classList.toggle('hidden');
+        this.fontToggle.textContent = hidden ? 'Show more fonts' : 'Show less';
+      });
+    }
+
     // Accent color presets
     if (this.accentPresets) {
       this.accentPresets.forEach(p => {
@@ -833,6 +874,29 @@ class NeoDesk {
         });
       });
     }
+    
+    // Gradient custom start/end
+    if (this.els.gradientStart) {
+      this.els.gradientStart.addEventListener('input', () => {
+        this.els.gradientStartHex.textContent = this.els.gradientStart.value;
+      });
+    }
+    if (this.els.gradientEnd) {
+      this.els.gradientEnd.addEventListener('input', () => {
+        this.els.gradientEndHex.textContent = this.els.gradientEnd.value;
+      });
+    }
+    if (this.els.gradientApply) {
+      this.els.gradientApply.addEventListener('click', () => {
+        this.settings.clockColor = 'gradient';
+        this.settings.gradientStart = this.els.gradientStart.value;
+        this.settings.gradientEnd = this.els.gradientEnd.value;
+        this._applyClockColor();
+        this.saveSettings();
+        this.toast('Clock gradient updated');
+      });
+    }
+
     if (this.els.clockPicker) {
       this.els.clockPicker.addEventListener('input', () => {
         this.settings.clockColor = this.els.clockPicker.value;
