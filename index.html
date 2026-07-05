@@ -1,111 +1,307 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NeoDesk</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
-<body class="dark">
+<body>
 
-  <!-- === HEADER === -->
-  <header>
-    <button id="theme-toggle" title="Toggle theme">🌤</button>
+  <!-- ═══ BACKGROUND OVERLAY ═══ -->
+  <div id="bg-overlay"></div>
+
+  <!-- ═══ SETTINGS PANEL ═══ -->
+  <aside id="settings-panel" class="slide-panel" role="dialog" aria-label="Settings">
+    <div class="panel-header">
+      <h2><!-- icon --><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Settings</h2>
+      <button id="settings-close" class="icon-btn" aria-label="Close settings">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="panel-body">
+
+      <!-- THEME -->
+      <section class="setting-group">
+        <h3><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg> Theme</h3>
+        <div class="theme-options">
+          <button class="theme-btn" data-theme="dark"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg> Dark</button>
+          <button class="theme-btn" data-theme="light"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg> Light</button>
+          <button class="theme-btn" data-theme="system"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg> System</button>
+        </div>
+      </section>
+
+      <!-- SEARCH ENGINE -->
+      <section class="setting-group">
+        <h3><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Default Search Engine</h3>
+        <select id="search-engine">
+          <option value="google">Google</option>
+          <option value="duckduckgo">DuckDuckGo</option>
+          <option value="bing">Bing</option>
+          <option value="brave">Brave</option>
+          <option value="yahoo">Yahoo</option>
+        </select>
+      </section>
+
+      <!-- TEMPERATURE -->
+      <section class="setting-group">
+        <h3><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg> Temperature Unit</h3>
+        <div class="toggle-row">
+          <button id="temp-c" class="toggle-btn active">&deg;C</button>
+          <button id="temp-f" class="toggle-btn">&deg;F</button>
+        </div>
+      </section>
+
+      <!-- CLOCK FORMAT -->
+      <section class="setting-group">
+        <h3><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Clock Format</h3>
+        <div class="toggle-row">
+          <button id="clock-24h" class="toggle-btn active">24h</button>
+          <button id="clock-12h" class="toggle-btn">12h</button>
+        </div>
+      </section>
+
+      <!-- DISPLAY NAME -->
+      <section class="setting-group">
+        <h3><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Display Name</h3>
+        <input type="text" id="user-name" placeholder="Your name..." maxlength="30">
+      </section>
+
+      <!-- TERMINAL SHORTCUT -->
+      <section class="setting-group">
+        <h3><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg> Terminal Shortcut</h3>
+        <div class="shortcut-row">
+          <div class="shortcut-key" id="shortcut-display" tabindex="0" role="button" aria-label="Click to set terminal shortcut">
+            <span class="mod-key">Alt</span><span class="plus">+</span><span class="char-key">T</span>
+          </div>
+          <button id="shortcut-reset" class="btn-ghost-sm" title="Reset to default">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+          </button>
+        </div>
+        <p class="setting-hint">Click the shortcut above, then press your desired key combination.</p>
+      </section>
+
+      <!-- BACKGROUND -->
+      <section class="setting-group">
+        <h3><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> Background</h3>
+        <div class="bg-presets">
+          <button class="bg-preset" data-bg="wave" style="background: linear-gradient(135deg, #0f0c29, #302b63, #24243e)" title="Wave"></button>
+          <button class="bg-preset" data-bg="sunset" style="background: linear-gradient(135deg, #f12711, #f5af19)" title="Sunset"></button>
+          <button class="bg-preset" data-bg="ocean" style="background: linear-gradient(135deg, #00b4db, #0083b0)" title="Ocean"></button>
+          <button class="bg-preset" data-bg="forest" style="background: linear-gradient(135deg, #134e5e, #71b280)" title="Forest"></button>
+          <button class="bg-preset" data-bg="cherry" style="background: linear-gradient(135deg, #e35d6a, #c7475b)" title="Cherry"></button>
+          <button class="bg-preset" data-bg="midnight" style="background: linear-gradient(135deg, #0f2027, #203a43, #2c5364)" title="Midnight"></button>
+          <button class="bg-preset" data-bg="none" style="background: #1a1a2e" title="Default"></button>
+        </div>
+        <div class="bg-custom">
+          <label class="file-label">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <span>Upload Image</span>
+            <input type="file" id="bg-upload" accept="image/*">
+          </label>
+          <div class="url-row">
+            <input type="text" id="bg-url" placeholder="Or paste image URL..." class="input-sm">
+            <button id="bg-apply-url" class="btn-sm">Apply</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- BLUR -->
+      <section class="setting-group">
+        <h3><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg> Background Blur</h3>
+        <div class="slider-row">
+          <input type="range" id="bg-blur" min="0" max="20" value="0" step="1">
+          <span id="bg-blur-value">0px</span>
+        </div>
+      </section>
+
+      <!-- WIDGETS -->
+      <section class="setting-group">
+        <h3><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Widgets</h3>
+        <label class="check-row">
+          <input type="checkbox" id="show-weather" checked>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
+          <span>Show Weather</span>
+        </label>
+        <label class="check-row">
+          <input type="checkbox" id="show-date" checked>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <span>Show Date</span>
+        </label>
+        <label class="check-row">
+          <input type="checkbox" id="show-favorites" checked>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          <span>Show Favorites</span>
+        </label>
+        <label class="check-row">
+          <input type="checkbox" id="show-quote" checked>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span>Show Quote</span>
+        </label>
+      </section>
+
+      <!-- DATA -->
+      <section class="setting-group">
+        <h3><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg> Data</h3>
+        <button id="reset-settings" class="btn-danger">Reset All Settings</button>
+      </section>
+
+    </div>
+  </aside>
+  <div id="settings-overlay" class="panel-overlay"></div>
+
+  <!-- ═══ TOP BAR ═══ -->
+  <header id="top-bar">
+    <div id="weather-widget">
+      <div id="weather-info" class="top-item" title="Click to change city">
+        <img id="weather-icon" src="" alt="" width="20" height="20" loading="lazy">
+        <span id="weather-temp">--&deg;C</span>
+        <span id="weather-city" class="weather-city">--</span>
+      </div>
+      <div id="weather-edit" class="weather-edit hidden">
+        <input type="text" id="weather-input" placeholder="City name..." class="input-xs">
+        <button id="weather-save" class="btn-xs">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div id="top-center" class="top-center">
+      <span id="live-time" class="live-time">--:--</span>
+      <span id="live-date" class="live-date">---</span>
+    </div>
+
+    <div id="top-right" class="top-right">
+      <button id="terminal-launch" class="top-icon-btn" id="terminal-launch-btn" title="Open Terminal" aria-label="Open Terminal">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+      </button>
+      <button id="settings-open" class="top-icon-btn" title="Settings" aria-label="Open Settings">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+    </div>
   </header>
 
-  <!-- === BACKGROUND WIDGET === -->
-  <div id="bg-widget">
-    <button id="bg-toggle" title="Change background">
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M4 4h16v16H4V4zm2 2v12h12V6H6zm2 2h8v8H8V8zm10 10H6v2h12v-2z"/>
-      </svg>
-    </button>
-    <div id="bg-menu" class="hidden">
-      <div class="bg-menu-header">Background Settings</div>
-      <label class="bg-option">
-        <span>Upload image</span>
-        <input type="file" id="bg-upload" accept="image/*" hidden />
-        <span class="file-btn">Choose file</span>
-        <span class="file-name" id="file-name">No file chosen</span>
-      </label>
-      <div class="bg-divider"></div>
-      <label class="bg-option">
-        <span>From URL</span>
-        <input type="text" id="bg-url" placeholder="https://example.com/image.jpg" />
-      </label>
-      <div class="bg-divider"></div>
-      <div class="bg-buttons">
-        <button id="bg-apply">Apply</button>
-        <button id="bg-reset" class="danger">Reset</button>
+  <!-- ═══ MAIN CONTENT ═══ -->
+  <main id="main-content">
+    <div id="greeting" class="greeting fade-in-up">
+      <span id="greeting-text">Good morning</span><span id="greeting-name"></span>
+    </div>
+
+    <div id="clock-display" class="fade-in-up" style="animation-delay: 0.08s">
+      <span id="clock-time">--:--</span>
+      <span id="clock-seconds">--</span>
+    </div>
+
+    <div id="quote-display" class="quote fade-in-up" style="animation-delay: 0.15s">
+      <span id="quote-text">"The only way to do great work is to love what you do."</span>
+      <span id="quote-author">&mdash; Steve Jobs</span>
+    </div>
+
+    <!-- ═══ SEARCH ═══ -->
+    <div id="search-container" class="fade-in-up" style="animation-delay: 0.22s">
+      <div class="search-wrapper">
+        <div class="search-engine-select">
+          <button id="engine-btn" class="engine-btn" title="Change search engine">
+            <svg id="engine-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </button>
+          <div id="engine-dropdown" class="engine-dropdown hidden">
+            <button class="engine-opt" data-engine="google"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Google</button>
+            <button class="engine-opt" data-engine="duckduckgo"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><circle cx="9" cy="10" r="1.5"/><circle cx="15" cy="10" r="1.5"/><path d="M12 16c-1.5 0-3-.5-3-2"/></svg> DuckDuckGo</button>
+            <button class="engine-opt" data-engine="bing"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3v18l10-6 6 3V9z"/></svg> Bing</button>
+            <button class="engine-opt" data-engine="brave"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l2 9 8 6 8-6 2-9-10-5z"/><path d="M8 10l4 5 4-5"/></svg> Brave</button>
+            <button class="engine-opt" data-engine="yahoo"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3l6 18h3l2-12 4 12h3L21 3"/></svg> Yahoo</button>
+          </div>
+        </div>
+        <input type="text" id="search-input" placeholder="Search the web..." spellcheck="false" autocomplete="off">
+        <button id="search-btn" class="search-btn" aria-label="Search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+      </div>
+      <div class="search-extras">
+        <button class="search-chip" data-mode="img" title="Search Images">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          Images
+        </button>
+        <button class="search-chip" data-mode="video" title="Search Videos">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+          Videos
+        </button>
+        <button class="search-chip" data-mode="news" title="Search News">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zm0 0a2 2 0 0 1-2-2v-9h2"/><line x1="10" y1="10" x2="18" y2="10"/><line x1="10" y1="14" x2="18" y2="14"/><line x1="10" y1="18" x2="14" y2="18"/></svg>
+          News
+        </button>
+        <button class="search-chip" data-mode="maps" title="Search Maps">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Maps
+        </button>
+      </div>
+      <div class="search-tips">
+        <kbd>Enter</kbd> search
+        <span class="tip-sep">&middot;</span>
+        <kbd>Tab</kbd> engine
+        <span class="tip-sep">&middot;</span>
+        <kbd id="shortcut-tip">Alt+T</kbd> terminal
       </div>
     </div>
-  </div>
 
-  <!-- === WEATHER WIDGET === -->
-  <div id="weather-widget">
-    <div id="weather-display">
-      <span id="weather-city">Loading...</span>
-      <span id="weather-temp"></span>
-      <img id="weather-icon" src="" alt="Weather Icon" />
-    </div>
-    <div id="weather-settings" class="hidden">
-      <input type="text" id="weather-input" placeholder="Enter city..." />
-      <button id="weather-save">Save</button>
-    </div>
-  </div>
-
-  <!-- === FAVORITES WIDGET === -->
-  <div id="favorites-widget">
-    <button id="fav-toggle" title="Open favorites">✦</button>
-
-    <div id="fav-panel" class="hidden">
-      <div class="fav-header">
-        <h3>Favorites</h3>
-        <button id="fav-add">✚</button>
+    <!-- ═══ FAVORITES ═══ -->
+    <section id="favorites-section" class="fade-in-up" style="animation-delay: 0.3s">
+      <div class="fav-header-bar">
+        <h3 class="fav-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          Quick Links
+        </h3>
+        <button id="fav-add-btn" class="fav-add-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add
+        </button>
       </div>
-
-      <div id="fav-list"></div>
-
-      <div id="fav-editor" class="hidden">
-        <input type="text" id="fav-name" placeholder="Name">
-        <input type="url" id="fav-url" placeholder="https://example.com">
-        <label for="fav-color">Color:</label>
-        <input type="color" id="fav-color" value="#4CAF50">
-        <div class="fav-editor-buttons">
-          <button id="fav-save">Save</button>
-          <button id="fav-cancel" class="danger">Cancel</button>
+      <div class="fav-scroll">
+        <div id="fav-grid" class="fav-grid"></div>
+      </div>
+      <div id="fav-editor" class="fav-editor hidden">
+        <div class="fav-editor-grid">
+          <input type="text" id="fav-name" placeholder="Name..." maxlength="24">
+          <input type="text" id="fav-url" placeholder="URL (e.g. github.com)" class="input-sm">
+        </div>
+        <div class="fav-editor-row">
+          <label class="color-label">
+            <input type="color" id="fav-color" value="#4CAF50">
+          </label>
+          <div class="fav-editor-actions">
+            <button id="fav-save" class="btn-sm">Save</button>
+            <button id="fav-cancel" class="btn-sm btn-ghost">Cancel</button>
+            <button id="fav-delete" class="btn-sm btn-danger-outline hidden">Delete</button>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
-
-
-
-  <!-- === MAIN CONTAINER === -->
-  <main class="container">
-    <h1 class="fade-in">NeoDesk</h1>
-    <form class="search-box fade-in" action="https://www.google.com/search" method="get">
-      <input type="text" name="q" placeholder="Enter your research..." autofocus />
-      <button type="submit">🔍︎</button>
-    </form>
-    <p id="date" class="fade-in-small"></p>
+    </section>
   </main>
 
-  <!-- === FOOTER === -->
-  <footer class="fade-in-small">
-    Made by Neon – <a href="https://github.com/NeonMC23/NeonDesk/">GitHub Pages</a>
-  </footer>
-
-  <!-- === TERMINAL === -->
-  <div id="terminal" class="hidden">
+  <!-- ═══ TERMINAL OVERLAY ═══ -->
+  <div id="terminal" class="terminal-overlay">
     <div class="terminal-container">
-      <div id="terminal-output"></div>
+      <div class="terminal-topbar">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot yellow"></span>
+        <span class="terminal-dot green"></span>
+        <span class="terminal-title">NeoDesk Terminal</span>
+        <button id="terminal-close" class="terminal-close" aria-label="Close terminal">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div id="terminal-output" class="terminal-output"></div>
       <div class="terminal-input-line">
         <span class="prompt">&gt;</span>
-        <input type="text" id="terminal-input" placeholder="Type your search..." autocomplete="off" />
+        <input type="text" id="terminal-input" placeholder="Type /help for commands..." autocomplete="off" spellcheck="false">
       </div>
     </div>
   </div>
+
+  <!-- ═══ TOAST CONTAINER ═══ -->
+  <div id="toast-container" class="toast-container"></div>
 
   <script src="main.js"></script>
 </body>
