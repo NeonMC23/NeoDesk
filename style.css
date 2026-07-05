@@ -236,7 +236,7 @@ body.has-bg #bg-overlay { background: transparent; }
   line-height: 1.2;
   flex-shrink: 0;
 }
-#greeting-name { font-weight: 600; color: var(--text-primary); }
+#greeting-name { font-weight: 400; color: var(--text-primary); }
 .greeting-comma { font-weight: 400; color: var(--text-secondary); }
 
 /* ─── Clock ─── */
@@ -1258,11 +1258,14 @@ body.light #terminal-input { caret-color: var(--accent); }
 /* Font options */
 .font-options { display: flex; flex-wrap: wrap; gap: 4px; }
 .font-btn {
-  flex: 1; min-width: 70px; padding: 6px 6px;
+  flex: 1; min-width: 65px; max-width: 115px; padding: 6px 5px;
   border: 1px solid var(--border); border-radius: var(--radius-xs);
   background: transparent; color: var(--text-secondary);
   cursor: pointer; transition: all 0.12s ease;
   font-size: 10px; font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .font-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(var(--accent-rgb),0.08); }
 .font-btn:not(.active):hover { background: var(--bg-hover); color: var(--text-primary); }
