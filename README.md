@@ -1,6 +1,6 @@
-# NeoDesk V4  ✨
+# NeoDesk v4 ✨
 
-> **V4** — A modern, beautiful new tab dashboard with terminal, weather, search, favorites & settings.
+> **v4** — A modern, beautiful new tab dashboard with terminal, weather, search, favorites & settings.
 
 NeoDesk transforms your browser's new tab page into a powerful, customizable dashboard featuring a live clock, weather widget, quick links, a built-in terminal, and a full settings panel — all saved to your browser's localStorage.
 
@@ -144,4 +144,4 @@ MIT © NeonMC23
 
 ---
 
-*Made with love — v4.0*
+*Made with ❤️ and lots of ☕ — v4.0*

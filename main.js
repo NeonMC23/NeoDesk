@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════
-   NeoDesk V4 — Main Application
+   NeoDesk v2 — Main Application
    ═══════════════════════════════════════════ */
 
 'use strict';

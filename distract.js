@@ -56,23 +56,36 @@
     }, 50);
   };
 
-  /* ========== 1. MATRIX — Full-screen, half-width katakana + Latin ========== */
+  /* ========== 1. MATRIX — Canvas-based, pixel-perfect monospace ========== */
   NeoDesk.prototype._launchMatrix = function() {
     this._distractRunning = true;
     var out = document.getElementById('distract-output');
     out.innerHTML = '';
-    out.style.cssText = 'overflow:hidden;background:#000;';
-    out.style.fontSize = '14px';
-    out.style.lineHeight = '1.3';
-    out.style.fontFamily = "'JetBrains Mono', 'Consolas', 'Courier New', monospace";
+    out.style.cssText = 'overflow:hidden;background:#000;position:relative;';
 
-    var cols = Math.floor(window.innerWidth / 13);
-    var rows = Math.floor(window.innerHeight / 19);
-    if (cols < 40) cols = 40;
-    if (rows < 20) rows = 20;
+    var canvas = document.createElement('canvas');
+    canvas.id = 'matrix-canvas';
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;display:block;';
+    out.appendChild(canvas);
+    var ctx = canvas.getContext('2d');
 
-    // Half-width katakana + Latin = properly monospace
-    var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜｦﾝ';
+    var resize = function() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
+    window.addEventListener('resize', resize);
+
+    // Measure character size using the canvas
+    ctx.font = 'bold 16px "JetBrains Mono", "Consolas", monospace';
+    var metrics = ctx.measureText('A');
+    var charW = metrics.width;
+    var charH = 20;
+
+    var cols = Math.floor(canvas.width / charW);
+    var rows = Math.floor(canvas.height / charH);
+    if (cols < 30) cols = 30;
+    if (rows < 15) rows = 15;
+
+    var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&?';
 
     var drops = [], speeds = [];
     for (var i = 0; i < cols; i++) {
@@ -82,33 +95,48 @@
 
     var self = this;
     var anim = function() {
-      if (!self._distractRunning) return;
-      var html = '';
+      if (!self._distractRunning) { window.removeEventListener('resize', resize); return; }
 
-      for (var r = 0; r < rows; r++) {
-        var row = '';
-        for (var c = 0; c < cols; c++) {
-          var dp = drops[c], dist = r - dp;
-          if (dist >= 0 && dist < 18) {
-            var ch = chars[Math.floor(Math.random() * chars.length)];
-            if (dist === 0) {
-              row += '<span style="color:#fff;font-weight:600">' + ch + '</span>';
-            } else if (dist < 3) {
-              row += '<span style="color:#7ee787">' + ch + '</span>';
-            } else if (dist < 8) {
-              row += '<span style="color:#3fb950;opacity:' + (0.7 - (dist - 3) * 0.1) + '">' + ch + '</span>';
-            } else {
-              var op = Math.max(0.05, 0.3 - (dist - 8) * 0.035);
-              row += '<span style="color:#2ea043;opacity:' + op + '">' + ch + '</span>';
-            }
+      // Semi-transparent black trail effect
+      ctx.fillStyle = 'rgba(0,0,0,0.05)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.font = 'bold 16px "JetBrains Mono", "Consolas", monospace';
+
+      for (var c = 0; c < cols; c++) {
+        var dp = drops[c];
+        var trailLen = 14;
+
+        for (var r = 0; r < trailLen; r++) {
+          var row = Math.floor(dp) - r;
+          if (row < 0 || row >= rows) continue;
+
+          var ch = chars[Math.floor(Math.random() * chars.length)];
+          var x = c * charW;
+          var y = (row + 1) * charH;
+
+          if (r === 0) {
+            // Head of the drop — bright white
+            ctx.fillStyle = '#ffffff';
+            ctx.globalAlpha = 0.95;
+          } else if (r < 3) {
+            // Near head — bright green
+            ctx.fillStyle = '#7ee787';
+            ctx.globalAlpha = 1 - (r - 1) * 0.15;
+          } else if (r < 7) {
+            // Mid trail — green fading
+            ctx.fillStyle = '#3fb950';
+            ctx.globalAlpha = 0.7 - (r - 3) * 0.12;
           } else {
-            row += '&nbsp;';
+            // Tail — dim green
+            ctx.fillStyle = '#2ea043';
+            ctx.globalAlpha = Math.max(0.05, 0.35 - (r - 7) * 0.06);
           }
+          ctx.fillText(ch, x, y);
         }
-        html += '<div style="line-height:1.3;margin:0">' + row + '</div>';
       }
 
-      out.innerHTML = html;
+      ctx.globalAlpha = 1;
 
       for (var i = 0; i < cols; i++) {
         drops[i] += speeds[i];
@@ -118,10 +146,10 @@
         }
       }
 
-      self._distractAnimId = setTimeout(anim, 90);
+      self._distractAnimId = setTimeout(anim, 80);
     };
     anim();
-    this._dprint('[Matrix running. Half-width katakana rain. Type "exit" to stop.]');
+    this._dprint('[Matrix running. Canvas-based. Type "exit" to stop.]');
   };
 
   /* ========== 2. CONWAY — Full-screen with speed + color ========== */

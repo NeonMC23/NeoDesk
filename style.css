@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════
-   NeoDesk V4 — Professional Dashboard
+   NeoDesk v2 — Professional Dashboard
    ═══════════════════════════════════════════ */
 
 /* ─── Variables ─── */
@@ -236,8 +236,8 @@ body.has-bg #bg-overlay { background: transparent; }
   line-height: 1.2;
   flex-shrink: 0;
 }
-/*#greeting-name { font-weight: 400; color: var(--text-primary); }
-.greeting-comma { font-weight: 400; color: var(--text-secondary); }*/
+#greeting-name { font-weight: 400; color: var(--text-primary); }
+.greeting-comma { font-weight: 400; color: var(--text-secondary); }
 
 /* ─── Clock ─── */
 #clock-display {
