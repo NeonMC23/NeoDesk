@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════
-   NeoDesk v4 — Distract Terminal
+   NeoDesk V4 — Distract Terminal
    Full-screen mini programs: Matrix, Conway
    ═══════════════════════════════════════════ */
 
