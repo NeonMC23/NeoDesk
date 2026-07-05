@@ -165,7 +165,9 @@ class NeoDesk {
       settingsOpen:    document.getElementById('settings-open'),
       settingsClose:   document.getElementById('settings-close'),
       userName:        document.getElementById('user-name'),
-      searchEngine:    document.getElementById('search-engine'),
+      engineLabel:     document.getElementById('engine-select-label'),
+      engineDDrop:     document.getElementById('engine-select-dropdown'),
+      engineTrigger:   document.getElementById('engine-select-trigger'),
       tempC:           document.getElementById('temp-c'),
       tempF:           document.getElementById('temp-f'),
       clock24h:        document.getElementById('clock-24h'),
@@ -183,6 +185,12 @@ class NeoDesk {
       shortcutDisplay: document.getElementById('shortcut-display'),
       shortcutReset:   document.getElementById('shortcut-reset'),
       shortcutTip:     document.getElementById('shortcut-tip'),
+      showTips:        document.getElementById('show-tips'),
+      searchSug:       document.getElementById('search-suggestions'),
+      accentPicker:    document.getElementById('accent-picker'),
+      accentHex:       document.getElementById('accent-hex'),
+      clockPicker:     document.getElementById('clock-picker'),
+      clockHex:        document.getElementById('clock-hex'),
       toastContainer:  document.getElementById('toast-container'),
     };
 
@@ -190,6 +198,10 @@ class NeoDesk {
     this.bgPresets = document.querySelectorAll('.bg-preset');
     this.engineOpts = document.querySelectorAll('.engine-opt');
     this.searchChips = document.querySelectorAll('.search-chip');
+    this.fontBtns = document.querySelectorAll('.font-btn');
+    this.accentPresets = document.querySelectorAll('#accent-presets .color-preset');
+    this.clockPresets = document.querySelectorAll('#clock-presets .color-preset');
+    this.customOpts = document.querySelectorAll('.custom-select-opt');
   }
 
   /* ─── Settings ─── */
@@ -215,6 +227,10 @@ class NeoDesk {
       showDate: true,
       showFavorites: true,
       showQuote: true,
+      showTips: true,
+      accentColor: '#2ea043',
+      clockColor: 'gradient',
+      fontFamily: "'Inter', sans-serif",
       weatherCity: 'Paris',
       shortcutKey: 't',
       shortcutMod: 'alt'
@@ -240,6 +256,9 @@ class NeoDesk {
     this.applyWidgets();
     this.updateSettingsUI();
     this.updateName();
+    this._applyAccent();
+    this._applyFont();
+    this._applyClockColor();
     this.updateEngineSvg();
     this.updateShortcutUI();
   }
@@ -326,12 +345,16 @@ class NeoDesk {
     this.els.showDate.checked = s.showDate;
     this.els.showFavorites.checked = s.showFavorites;
     this.els.showQuote.checked = s.showQuote;
+    if (this.els.showTips) {
+      document.querySelector('.search-tips').style.display = s.showTips ? '' : 'none';
+      this.els.showTips.checked = s.showTips;
+    }
   }
 
   /* ─── Settings UI ─── */
   updateSettingsUI() {
     this.els.userName.value = this.settings.userName || '';
-    this.els.searchEngine.value = this.settings.searchEngine;
+    if (this.els.engineLabel) this.els.engineLabel.textContent = this.settings.searchEngine.charAt(0).toUpperCase() + this.settings.searchEngine.slice(1);
     this.els.bgUrl.value = '';
     this.els.tempC.classList.toggle('active', this.settings.tempUnit === 'celsius');
     this.els.tempF.classList.toggle('active', this.settings.tempUnit !== 'celsius');
@@ -346,6 +369,69 @@ class NeoDesk {
   }
 
   /* ─── Engine SVG ─── */
+  
+  /* ─── Accent Color ─── */
+  _applyAccent() {
+    const c = this.settings.accentColor || '#2ea043';
+    const r = parseInt(c.slice(1,3), 16), g = parseInt(c.slice(3,5), 16), b = parseInt(c.slice(5,7), 16);
+    document.documentElement.style.setProperty('--accent', c);
+    document.documentElement.style.setProperty('--accent-hover', this._lighten(c, 15));
+    document.documentElement.style.setProperty('--accent-rgb', `${r},${g},${b}`);
+    if (this.accentPresets) this.accentPresets.forEach(p => p.classList.toggle('active', p.dataset.color === c));
+    if (this.els.accentPicker) { this.els.accentPicker.value = c; this.els.accentHex.textContent = c; }
+  }
+
+  _lighten(hex, amt) {
+    let r = parseInt(hex.slice(1,3), 16), g = parseInt(hex.slice(3,5), 16), b = parseInt(hex.slice(5,7), 16);
+    r = Math.min(255, r+amt); g = Math.min(255, g+amt); b = Math.min(255, b+amt);
+    return '#' + r.toString(16).padStart(2,'0') + g.toString(16).padStart(2,'0') + b.toString(16).padStart(2,'0');
+  }
+
+  _applyFont() {
+    const f = this.settings.fontFamily || "'Inter', sans-serif";
+    document.documentElement.style.setProperty('--font', f);
+    if (this.fontBtns) this.fontBtns.forEach(b => b.classList.toggle('active', b.dataset.font === f));
+  }
+
+  _applyClockColor() {
+    const c = this.settings.clockColor;
+    const ct = this.els.clockTime;
+    if (!c || c === 'gradient') {
+      ct.classList.remove('solid'); ct.classList.add('gradient');
+      if (this.els.clockHex) this.els.clockHex.textContent = 'Gradient';
+    } else {
+      ct.classList.remove('gradient'); ct.classList.add('solid');
+      document.documentElement.style.setProperty('--clock-solid', c);
+      if (this.els.clockHex) this.els.clockHex.textContent = c;
+    }
+    if (this.clockPresets) this.clockPresets.forEach(p => p.classList.toggle('active', p.dataset.color === c));
+  }
+
+  /* ─── Search Suggestions ─── */
+  _suggestionsList = [
+    {label:'Google', url:'https://google.com'},
+    {label:'YouTube', url:'https://youtube.com'},
+    {label:'GitHub', url:'https://github.com'},
+    {label:'Reddit', url:'https://reddit.com'},
+    {label:'Wikipedia', url:'https://wikipedia.org'},
+    {label:'Stack Overflow', url:'https://stackoverflow.com'},
+    {label:'Amazon', url:'https://amazon.com'},
+  ];
+
+  _showSuggestions() {
+    const q = this.els.searchInput.value.trim().toLowerCase();
+    const sug = this.els.searchSug;
+    if (!q || document.activeElement !== this.els.searchInput) { sug.classList.add('hidden'); return; }
+    const matches = this._suggestionsList.filter(s => s.label.toLowerCase().includes(q)).slice(0, 5);
+    if (!matches.length) { sug.classList.add('hidden'); return; }
+    sug.innerHTML = matches.map(s =>
+      '<div class="search-suggestion-item" data-url="' + s.url + '">' +
+      '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>' +
+      '<span>' + s.label + '</span></div>'
+    ).join('');
+    sug.classList.remove('hidden');
+  }
+
   updateEngineSvg() {
     const engine = this.settings.searchEngine;
     // We keep the same search icon but could change color based on engine
@@ -587,7 +673,7 @@ class NeoDesk {
   terminalPrint(text, type = '') {
     const line = document.createElement('div');
     line.className = `terminal-line ${type}`;
-    line.textContent = text;
+    line.innerHTML = text;
     this.els.terminalOutput.appendChild(line);
     this.els.terminalOutput.scrollTop = this.els.terminalOutput.scrollHeight;
   }
@@ -601,22 +687,8 @@ class NeoDesk {
     this.terminalClear();
     this.terminalPrint('NeoDesk Terminal Commands:', 'info');
     this.terminalPrint('');
-    this.terminalPrint('  /g <query>        Google Search');
-    this.terminalPrint('  /yt <query>       YouTube Search');
-    this.terminalPrint('  /img <query>      Image Search');
-    this.terminalPrint('  /map <query>      Maps Search');
-    this.terminalPrint('  /wiki <query>     Wikipedia');
-    this.terminalPrint('  /ddg <query>      DuckDuckGo');
-    this.terminalPrint('  /reddit <q>       Reddit Search');
-    this.terminalPrint('  /gh <query>       GitHub Search');
-    this.terminalPrint('  /s <query>        Default Search');
-    this.terminalPrint('  /weather <city>   Set weather city');
-    this.terminalPrint('  /theme <mode>     dark|light|system');
-    this.terminalPrint('  /time             Show time');
-    this.terminalPrint('  /date             Show date');
-    this.terminalPrint('  /todo             Open Todoist');
-    this.terminalPrint('  /clear            Clear terminal');
-    this.terminalPrint('  /help             Show this message');
+    const cmds = [['/g &lt;query&gt;','Google Search'],['/yt &lt;query&gt;','YouTube Search'],['/img &lt;query&gt;','Image Search'],['/map &lt;query&gt;','Maps Search'],['/wiki &lt;query&gt;','Wikipedia'],['/ddg &lt;query&gt;','DuckDuckGo'],['/reddit &lt;q&gt;','Reddit Search'],['/gh &lt;query&gt;','GitHub Search'],['/s &lt;query&gt;','Default Search'],['/weather &lt;city&gt;','Set weather city'],['/theme &lt;mode&gt;','dark|light|system'],['/time','Show time'],['/date','Show date'],['/todo','Open Todoist'],['/clear','Clear terminal'],['/help','Show this help']];
+    cmds.forEach(([c,d]) => { this.terminalPrint('  <span class="hl">' + c + '</span>  ' + d); });
     this.terminalPrint('');
     this.terminalPrint('  Tip: Just type anything to search!');
   }
@@ -716,6 +788,50 @@ class NeoDesk {
     this.els.settingsClose.addEventListener('click', closeSettings);
     this.els.settingsOverlay.addEventListener('click', closeSettings);
 
+    
+    // Accent color presets
+    if (this.accentPresets) {
+      this.accentPresets.forEach(p => {
+        p.addEventListener('click', () => {
+          this.settings.accentColor = p.dataset.color;
+          this._applyAccent(); this.saveSettings(); this.toast('Accent color updated');
+        });
+      });
+    }
+    if (this.els.accentPicker) {
+      this.els.accentPicker.addEventListener('input', () => {
+        this.settings.accentColor = this.els.accentPicker.value;
+        this._applyAccent(); this.saveSettings();
+      });
+    }
+
+    // Clock color presets
+    if (this.clockPresets) {
+      this.clockPresets.forEach(p => {
+        p.addEventListener('click', () => {
+          this.settings.clockColor = p.dataset.color;
+          this._applyClockColor(); this.saveSettings();
+        });
+      });
+    }
+    if (this.els.clockPicker) {
+      this.els.clockPicker.addEventListener('input', () => {
+        this.settings.clockColor = this.els.clockPicker.value;
+        this._applyClockColor(); this.saveSettings();
+      });
+    }
+
+    // Font family
+    if (this.fontBtns) {
+      this.fontBtns.forEach(b => {
+        b.addEventListener('click', () => {
+          this.settings.fontFamily = b.dataset.font;
+          this._applyFont(); this.saveSettings();
+          this.toast('Font: ' + b.textContent);
+        });
+      });
+    }
+
     // Username
     this.els.userName.addEventListener('input', () => {
       this.settings.userName = this.els.userName.value;
@@ -723,12 +839,21 @@ class NeoDesk {
       this.saveSettings();
     });
 
-    // Search engine select
-    this.els.searchEngine.addEventListener('change', () => {
-      this.settings.searchEngine = this.els.searchEngine.value;
-      this.saveSettings();
-      this.toast(`Engine: ${this.els.searchEngine.value}`);
-    });
+    // Custom search engine select
+    if (this.els.engineTrigger) {
+      this.els.engineTrigger.addEventListener('click', (e) => { e.stopPropagation(); this.els.engineDDrop.classList.toggle('hidden'); });
+      this.customOpts.forEach(o => {
+        o.addEventListener('click', () => {
+          const v = o.dataset.value;
+          this.settings.searchEngine = v;
+          this.els.engineLabel.textContent = v.charAt(0).toUpperCase() + v.slice(1);
+          this.saveSettings();
+          this.els.engineDDrop.classList.add('hidden');
+          this.toast('Engine: ' + v);
+        });
+      });
+      document.addEventListener('click', () => { if (this.els.engineDDrop) this.els.engineDDrop.classList.add('hidden'); });
+    }
 
     // Engine dropdown
     this.els.engineBtn.addEventListener('click', (e) => {
@@ -745,6 +870,17 @@ class NeoDesk {
       });
     });
     document.addEventListener('click', () => this.els.engineDropdown.classList.add('hidden'));
+
+    // Search suggestions
+    if (this.els.searchSug) {
+      this.els.searchInput.addEventListener('input', () => this._showSuggestions());
+      this.els.searchInput.addEventListener('focus', () => this._showSuggestions());
+      this.els.searchInput.addEventListener('blur', () => setTimeout(() => { if (this.els.searchSug) this.els.searchSug.classList.add('hidden'); }, 150));
+      this.els.searchSug.addEventListener('click', (e) => {
+        const item = e.target.closest('.search-suggestion-item');
+        if (item) { window.open(item.dataset.url, '_blank'); if (this.els.searchSug) this.els.searchSug.classList.add('hidden'); }
+      });
+    }
 
     // Search
     this.els.searchInput.addEventListener('keydown', (e) => {
@@ -845,7 +981,7 @@ class NeoDesk {
     });
 
     // Widget checkboxes
-    ['showWeather','showDate','showFavorites','showQuote'].forEach(id => {
+    ['showWeather','showDate','showFavorites','showQuote','showTips'].forEach(id => {
       this.els[id].addEventListener('change', () => {
         this.settings[id] = this.els[id].checked;
         this.applyWidgets();

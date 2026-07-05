@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NeoDesk</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -33,16 +33,68 @@
         </div>
       </section>
 
+            <!-- ACCENT COLOR -->
+      <section class="setting-group">
+        <h3>Accent Color</h3>
+        <div class="color-presets" id="accent-presets">
+          <button class="color-preset" data-color="#2ea043" style="background:#2ea043" title="Forest"></button>
+          <button class="color-preset" data-color="#58a6ff" style="background:#58a6ff" title="Blue"></button>
+          <button class="color-preset" data-color="#a371f7" style="background:#a371f7" title="Purple"></button>
+          <button class="color-preset" data-color="#f78166" style="background:#f78166" title="Coral"></button>
+          <button class="color-preset" data-color="#ffc107" style="background:#ffc107" title="Gold"></button>
+          <button class="color-preset" data-color="#ff6b9d" style="background:#ff6b9d" title="Pink"></button>
+          <button class="color-preset" data-color="#56d4dd" style="background:#56d4dd" title="Teal"></button>
+        </div>
+        <div class="accent-custom-row">
+          <label><input type="color" id="accent-picker" value="#2ea043" class="color-pick"></label>
+          <span id="accent-hex" class="color-hex">#2ea043</span>
+        </div>
+      </section>
+
+      <!-- CLOCK COLOR -->
+      <section class="setting-group">
+        <h3>Clock Color</h3>
+        <div class="color-presets" id="clock-presets">
+          <button class="color-preset clock-preset" data-color="" style="background:linear-gradient(135deg,#f0f6fc,#2ea043)" title="Gradient"></button>
+          <button class="color-preset clock-preset" data-color="#f0f6fc" style="background:#f0f6fc" title="White"></button>
+          <button class="color-preset clock-preset" data-color="#2ea043" style="background:#2ea043" title="Green"></button>
+          <button class="color-preset clock-preset" data-color="#58a6ff" style="background:#58a6ff" title="Blue"></button>
+          <button class="color-preset clock-preset" data-color="#f78166" style="background:#f78166" title="Coral"></button>
+          <button class="color-preset clock-preset" data-color="#ffc107" style="background:#ffc107" title="Gold"></button>
+        </div>
+        <div class="accent-custom-row">
+          <label><input type="color" id="clock-picker" value="#f0f6fc" class="color-pick"></label>
+          <span id="clock-hex" class="color-hex">Gradient</span>
+        </div>
+      </section>
+
+      <!-- FONT FAMILY -->
+      <section class="setting-group">
+        <h3>Font Family</h3>
+        <div class="font-options">
+          <button class="font-btn active" data-font="'Inter', sans-serif">Inter</button>
+          <button class="font-btn" data-font="'Space Grotesk', sans-serif">Space Grotesk</button>
+          <button class="font-btn" data-font="'Outfit', sans-serif">Outfit</button>
+          <button class="font-btn" data-font="'Segoe UI', sans-serif">Segoe UI</button>
+        </div>
+      </section>
+
       <!-- SEARCH ENGINE -->
       <section class="setting-group">
-        <h3><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Default Search Engine</h3>
-        <select id="search-engine">
-          <option value="google">Google</option>
-          <option value="duckduckgo">DuckDuckGo</option>
-          <option value="bing">Bing</option>
-          <option value="brave">Brave</option>
-          <option value="yahoo">Yahoo</option>
-        </select>
+        <h3>Default Search Engine</h3>
+        <div class="custom-select" id="engine-select-wrap">
+          <button class="custom-select-trigger" id="engine-select-trigger">
+            <span id="engine-select-label">Google</span>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="custom-select-dropdown hidden" id="engine-select-dropdown">
+            <button class="custom-select-opt" data-value="google"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Google</button>
+            <button class="custom-select-opt" data-value="duckduckgo"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="9" cy="10" r="1.5"/><circle cx="15" cy="10" r="1.5"/></svg> DuckDuckGo</button>
+            <button class="custom-select-opt" data-value="bing"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3v18l10-6 6 3V9z"/></svg> Bing</button>
+            <button class="custom-select-opt" data-value="brave"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l2 9 8 6 8-6 2-9-10-5z"/><path d="M8 10l4 5 4-5"/></svg> Brave</button>
+            <button class="custom-select-opt" data-value="yahoo"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3l6 18h3l2-12 4 12h3L21 3"/></svg> Yahoo</button>
+          </div>
+        </div>
       </section>
 
       <!-- TEMPERATURE -->
@@ -140,6 +192,8 @@
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
           <span>Show Quote</span>
         </label>
+        <label class="check-row"><input type="checkbox" id="show-tips" checked><span>Show Search Tips</span></label>
+        </label>
       </section>
 
       <!-- DATA -->
@@ -161,7 +215,10 @@
         <span id="weather-city" class="weather-city">--</span>
       </div>
       <div id="weather-edit" class="weather-edit hidden">
-        <input type="text" id="weather-input" placeholder="City name..." class="input-xs">
+        <input type="text" id="weather-input" placeholder="City name..." class="input-xs" list="city-suggestions">
+        <datalist id="city-suggestions">
+          <option value="Paris"><option value="London"><option value="New York"><option value="Tokyo"><option value="Sydney"><option value="Berlin"><option value="Madrid"><option value="Rome"><option value="Amsterdam"><option value="Dubai"><option value="Singapore"><option value="Bangkok"><option value="Seoul"><option value="Los Angeles"><option value="San Francisco"><option value="Toronto"><option value="Moscow"><option value="Mumbai"><option value="Shanghai"><option value="Sao Paulo">
+        </datalist>
         <button id="weather-save" class="btn-xs">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
         </button>
@@ -186,7 +243,7 @@
   <!-- ═══ MAIN CONTENT ═══ -->
   <main id="main-content">
     <div id="greeting" class="greeting fade-in-up">
-      <span id="greeting-text">Good morning</span><span id="greeting-name"></span>
+      <span id="greeting-text">Good morning</span><span id="greeting-comma" class="greeting-comma"></span><span id="greeting-name"></span>
     </div>
 
     <div id="clock-display" class="fade-in-up" style="animation-delay: 0.08s">
@@ -205,6 +262,7 @@
         <div class="search-engine-select">
           <button id="engine-btn" class="engine-btn" title="Change search engine">
             <svg id="engine-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <svg class="engine-chevron" width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
           <div id="engine-dropdown" class="engine-dropdown hidden">
             <button class="engine-opt" data-engine="google"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Google</button>
@@ -214,7 +272,10 @@
             <button class="engine-opt" data-engine="yahoo"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3l6 18h3l2-12 4 12h3L21 3"/></svg> Yahoo</button>
           </div>
         </div>
-        <input type="text" id="search-input" placeholder="Search the web..." spellcheck="false" autocomplete="off">
+        <div class="search-input-wrap">
+          <input type="text" id="search-input" placeholder="Search the web..." spellcheck="false" autocomplete="off">
+          <div id="search-suggestions" class="search-suggestions hidden"></div>
+        </div>
         <button id="search-btn" class="search-btn" aria-label="Search">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         </button>
@@ -304,5 +365,5 @@
   <div id="toast-container" class="toast-container"></div>
 
   <script src="main.js"></script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a16883115f34bb81',t:'MTc4MzI3Njk3MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
