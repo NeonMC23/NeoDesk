@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════
-   NeoDesk v2 — Main Application
+   NeoDesk V4 — Main Application
    ═══════════════════════════════════════════ */
 
 'use strict';
@@ -1214,3 +1214,9 @@ class NeoDesk {
   }
 
 }
+
+
+/* ─── Bootstrap ─── */
+document.addEventListener('DOMContentLoaded', () => {
+  window.neoDesk = new NeoDesk();
+});
