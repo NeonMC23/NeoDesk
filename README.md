@@ -142,4 +142,4 @@ MIT © NeonMC23
 
 ---
 
-*Made with ❤️ and lots of ☕ — v3.0*
+*Made with love — v3.0*
