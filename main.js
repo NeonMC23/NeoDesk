@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════
-   NeoDesk — Main Application
+   NeoDesk v2 — Main Application
    ═══════════════════════════════════════════ */
 
 'use strict';
@@ -12,33 +12,98 @@ class NeoDesk {
     this.editingFavIndex = null;
     this.weatherEditOpen = false;
     this.engineOpen = false;
-    
-    // Search engine URLs
+    this.isRecordingShortcut = false;
+
+    // Search engine configs with SVG icons
     this.engines = {
-      google:      { url: 'https://www.google.com/search?q=',          icon: '🔍' },
-      duckduckgo:  { url: 'https://duckduckgo.com/?q=',                icon: '🦆' },
-      bing:        { url: 'https://www.bing.com/search?q=',            icon: '🔎' },
-      brave:       { url: 'https://search.brave.com/search?q=',        icon: '🛡️' },
-      yahoo:       { url: 'https://search.yahoo.com/search?p=',        icon: '📬' }
+      google: {
+        url: 'https://www.google.com/search?q=',
+        modes: {
+          default: '',
+          img: '&tbm=isch',
+          video: '&tbm=vid',
+          news: '&tbm=nws',
+          maps: ''
+        },
+        modeUrl: (q, mode) => {
+          if (mode === 'maps') return `https://www.google.com/maps/search/${encodeURIComponent(q)}`;
+          return `https://www.google.com/search?q=${encodeURIComponent(q)}${mode === 'default' ? '' : mode}`;
+        }
+      },
+      duckduckgo: {
+        url: 'https://duckduckgo.com/?q=',
+        modes: {
+          default: '',
+          img: '&iax=images&ia=images',
+          video: '&iax=videos&ia=videos',
+          news: '&iar=news',
+          maps: ''
+        },
+        modeUrl: (q, mode) => {
+          if (mode === 'maps') return `https://duckduckgo.com/?q=${encodeURIComponent(q)}&iax=maps&ia=maps`;
+          return `https://duckduckgo.com/?q=${encodeURIComponent(q)}${mode === 'default' ? '' : mode}`;
+        }
+      },
+      bing: {
+        url: 'https://www.bing.com/search?q=',
+        modes: {
+          default: '',
+          img: '&qft=+filterui:photo-photo',
+          video: '&qft=+filterui:video-video',
+          news: '&qft=+filterui:news-news',
+          maps: ''
+        },
+        modeUrl: (q, mode) => {
+          if (mode === 'maps') return `https://www.bing.com/maps?q=${encodeURIComponent(q)}`;
+          return `https://www.bing.com/search?q=${encodeURIComponent(q)}${mode === 'default' ? '' : mode}`;
+        }
+      },
+      brave: {
+        url: 'https://search.brave.com/search?q=',
+        modes: {
+          default: '',
+          img: '&source=images',
+          video: '&source=videos',
+          news: '&source=news',
+          maps: ''
+        },
+        modeUrl: (q, mode) => {
+          if (mode === 'maps') return `https://search.brave.com/maps?q=${encodeURIComponent(q)}`;
+          return `https://search.brave.com/search?q=${encodeURIComponent(q)}${mode === 'default' ? '' : '&source=' + mode}`;
+        }
+      },
+      yahoo: {
+        url: 'https://search.yahoo.com/search?p=',
+        modes: {
+          default: '',
+          img: '',
+          video: '',
+          news: '',
+          maps: ''
+        },
+        modeUrl: (q, mode) => {
+          return `https://search.yahoo.com/search?p=${encodeURIComponent(q)}`;
+        }
+      }
     };
 
     // Terminal commands
     this.terminalCommands = {
       '/help':   () => this.terminalHelp(),
       '/clear':  () => this.terminalClear(),
-      '/g':      (q) => this.searchQuery('google', q),
+      '/g':      (q) => this.searchQuery('google', q, 'default'),
       '/yt':     (q) => { window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(q)}`, '_blank'); return true; },
-      '/img':    (q) => { window.open(`https://www.google.com/search?tbm=isch&q=${encodeURIComponent(q)}`, '_blank'); return true; },
-      '/map':    (q) => { window.open(`https://www.google.com/maps/search/${encodeURIComponent(q)}`, '_blank'); return true; },
+      '/img':    (q) => this.searchQuery(this.settings.searchEngine, q, 'img'),
+      '/map':    (q) => this.searchQuery(this.settings.searchEngine, q, 'maps'),
       '/wiki':   (q) => { window.open(`https://en.wikipedia.org/wiki/Special:Search?search=${encodeURIComponent(q)}`, '_blank'); return true; },
       '/ddg':    (q) => { window.open(`https://duckduckgo.com/?q=${encodeURIComponent(q)}`, '_blank'); return true; },
       '/reddit': (q) => { window.open(`https://www.reddit.com/search/?q=${encodeURIComponent(q)}`, '_blank'); return true; },
       '/gh':     (q) => { window.open(`https://github.com/search?q=${encodeURIComponent(q)}`, '_blank'); return true; },
-      '/s':      (q) => this.searchQuery(this.settings.searchEngine, q),
+      '/s':      (q) => this.searchQuery(this.settings.searchEngine, q, 'default'),
       '/time':   () => this.terminalPrint(`Current time: ${new Date().toLocaleTimeString()}`, 'info'),
       '/date':   () => this.terminalPrint(`Current date: ${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`, 'info'),
       '/weather':(q) => { if (q) { this.setWeatherCity(q); this.terminalPrint(`Weather set to: ${q}`, 'success'); } else { this.terminalPrint('Usage: /weather <city>', 'info'); } return true; },
-      '/theme':  (q) => { if (q === 'dark' || q === 'light' || q === 'system') { this.setTheme(q); this.terminalPrint(`Theme changed to: ${q}`, 'success'); } else { this.terminalPrint('Usage: /theme <dark|light|system>', 'info'); } return true; },
+      '/theme':  (q) => { if (['dark','light','system'].includes(q)) { this.setTheme(q); this.terminalPrint(`Theme: ${q}`, 'success'); } else { this.terminalPrint('Usage: /theme <dark|light|system>', 'info'); } return true; },
       '/todo':   () => { window.open('https://todoist.com', '_blank'); return true; }
     };
 
@@ -48,6 +113,7 @@ class NeoDesk {
   /* ─── Init ─── */
   init() {
     this.cacheDOM();
+    this.updateShortcutTip();
     this.applySettings();
     this.renderFavorites();
     this.startClock();
@@ -55,13 +121,11 @@ class NeoDesk {
     this.fetchWeather();
     this.fetchQuote();
     this.bindEvents();
-    this.showToast('Welcome to NeoDesk ✨', 2000);
   }
 
   /* ─── Cache DOM ─── */
   cacheDOM() {
     this.els = {
-      // Top bar
       weatherInfo:     document.getElementById('weather-info'),
       weatherIcon:     document.getElementById('weather-icon'),
       weatherTemp:     document.getElementById('weather-temp'),
@@ -71,23 +135,17 @@ class NeoDesk {
       weatherSave:     document.getElementById('weather-save'),
       liveTime:        document.getElementById('live-time'),
       liveDate:        document.getElementById('live-date'),
-
-      // Main
       greetingText:    document.getElementById('greeting-text'),
       greetingName:    document.getElementById('greeting-name'),
       clockTime:       document.getElementById('clock-time'),
       clockSeconds:    document.getElementById('clock-seconds'),
       quoteText:       document.getElementById('quote-text'),
       quoteAuthor:     document.getElementById('quote-author'),
-
-      // Search
       searchInput:     document.getElementById('search-input'),
       searchBtn:       document.getElementById('search-btn'),
       engineBtn:       document.getElementById('engine-btn'),
-      engineIcon:      document.getElementById('engine-icon'),
+      engineSvg:       document.getElementById('engine-svg'),
       engineDropdown:  document.getElementById('engine-dropdown'),
-
-      // Favorites
       favGrid:         document.getElementById('fav-grid'),
       favAddBtn:       document.getElementById('fav-add-btn'),
       favEditor:       document.getElementById('fav-editor'),
@@ -97,15 +155,11 @@ class NeoDesk {
       favSave:         document.getElementById('fav-save'),
       favCancel:       document.getElementById('fav-cancel'),
       favDelete:       document.getElementById('fav-delete'),
-
-      // Terminal
       terminal:        document.getElementById('terminal'),
       terminalOutput:  document.getElementById('terminal-output'),
       terminalInput:   document.getElementById('terminal-input'),
       terminalClose:   document.getElementById('terminal-close'),
       terminalLaunch:  document.getElementById('terminal-launch'),
-
-      // Settings
       settingsPanel:   document.getElementById('settings-panel'),
       settingsOverlay: document.getElementById('settings-overlay'),
       settingsOpen:    document.getElementById('settings-open'),
@@ -126,21 +180,19 @@ class NeoDesk {
       showFavorites:   document.getElementById('show-favorites'),
       showQuote:       document.getElementById('show-quote'),
       resetSettings:   document.getElementById('reset-settings'),
-      bgOverlay:       document.getElementById('bg-overlay'),
-      topBar:          document.getElementById('top-bar'),
-      mainContent:     document.getElementById('main-content'),
-
-      // Toast
+      shortcutDisplay: document.getElementById('shortcut-display'),
+      shortcutReset:   document.getElementById('shortcut-reset'),
+      shortcutTip:     document.getElementById('shortcut-tip'),
       toastContainer:  document.getElementById('toast-container'),
     };
 
-    // Theme buttons collection
     this.themeBtns = document.querySelectorAll('.theme-btn');
     this.bgPresets = document.querySelectorAll('.bg-preset');
     this.engineOpts = document.querySelectorAll('.engine-opt');
+    this.searchChips = document.querySelectorAll('.search-chip');
   }
 
-  /* ─── LocalStorage ─── */
+  /* ─── Settings ─── */
   loadSettings() {
     try {
       const saved = localStorage.getItem('neodesk_settings');
@@ -163,54 +215,46 @@ class NeoDesk {
       showDate: true,
       showFavorites: true,
       showQuote: true,
-      weatherCity: 'Paris'
+      weatherCity: 'Paris',
+      shortcutKey: 't',
+      shortcutMod: 'alt'
     };
   }
 
   saveSettings() {
-    try {
-      localStorage.setItem('neodesk_settings', JSON.stringify(this.settings));
-    } catch (e) { /* ignore */ }
+    try { localStorage.setItem('neodesk_settings', JSON.stringify(this.settings)); } catch (e) {}
   }
 
   loadFavorites() {
-    try {
-      return JSON.parse(localStorage.getItem('neodesk_favorites')) || [];
-    } catch (e) { return []; }
+    try { return JSON.parse(localStorage.getItem('neodesk_favorites')) || []; } catch (e) { return []; }
   }
 
   saveFavorites() {
-    try {
-      localStorage.setItem('neodesk_favorites', JSON.stringify(this.favorites));
-    } catch (e) { /* ignore */ }
+    try { localStorage.setItem('neodesk_favorites', JSON.stringify(this.favorites)); } catch (e) {}
   }
 
-  /* ─── Apply All Settings ─── */
+  /* ─── Apply All ─── */
   applySettings() {
     this.applyTheme();
     this.applyBackground();
     this.applyWidgets();
     this.updateSettingsUI();
-    this.updateClockFormat();
     this.updateName();
-    this.updateEngineIcon();
+    this.updateEngineSvg();
+    this.updateShortcutUI();
   }
 
   /* ─── Theme ─── */
   applyTheme() {
     const theme = this.settings.theme;
     document.body.classList.remove('dark', 'light');
-
     if (theme === 'system') {
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      document.body.classList.add(prefersDark ? 'dark' : 'light');
+      const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.body.classList.add(dark ? 'dark' : 'light');
     } else {
       document.body.classList.add(theme);
     }
-
-    this.themeBtns.forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.theme === theme);
-    });
+    this.themeBtns.forEach(b => b.classList.toggle('active', b.dataset.theme === theme));
   }
 
   setTheme(theme) {
@@ -223,24 +267,15 @@ class NeoDesk {
   applyBackground() {
     const bg = this.settings.background;
     const body = document.body;
-
-    // Reset
+    body.style.background = '';
     body.style.backgroundImage = '';
-    body.style.backgroundColor = '';
     body.classList.remove('has-bg');
 
     if (bg === 'none' || bg === 'default') {
-      // Default gradient based on theme
-      if (bg === 'none') {
-        document.body.classList.contains('dark')
-          ? body.style.background = '#0d1117'
-          : body.style.background = '#ffffff';
-      }
       this.updateBgPresetUI(bg);
       return;
     }
 
-    // Gradient presets
     const gradients = {
       wave:    'linear-gradient(135deg, #0f0c29, #302b63, #24243e)',
       sunset:  'linear-gradient(135deg, #f12711, #f5af19)',
@@ -257,7 +292,6 @@ class NeoDesk {
       return;
     }
 
-    // Custom image
     if (this.settings.bgImage) {
       body.style.backgroundImage = `url('${this.settings.bgImage}')`;
       body.style.backgroundSize = 'cover';
@@ -266,14 +300,11 @@ class NeoDesk {
       body.style.backgroundAttachment = 'fixed';
       body.classList.add('has-bg');
     }
-
     this.updateBgPresetUI(bg);
   }
 
   updateBgPresetUI(active) {
-    this.bgPresets.forEach(p => {
-      p.classList.toggle('active', p.dataset.bg === active);
-    });
+    this.bgPresets.forEach(p => p.classList.toggle('active', p.dataset.bg === active));
   }
 
   /* ─── Blur ─── */
@@ -284,15 +315,13 @@ class NeoDesk {
     this.els.bgBlurValue.textContent = `${blur}px`;
   }
 
-  /* ─── Widgets Visibility ─── */
+  /* ─── Widgets ─── */
   applyWidgets() {
     const s = this.settings;
-    this.els.weatherInfo.closest('#weather-widget').style.display = s.showWeather ? '' : 'none';
+    document.getElementById('weather-widget').style.display = s.showWeather ? '' : 'none';
     this.els.liveDate.style.display = s.showDate ? '' : 'none';
-    this.els.quoteText.closest('.quote').style.display = s.showQuote ? '' : 'none';
-    this.els.favGrid.closest('#favorites-section').style.display = s.showFavorites ? '' : 'none';
-    
-    // Checkboxes
+    document.querySelector('.quote').style.display = s.showQuote ? '' : 'none';
+    document.getElementById('favorites-section').style.display = s.showFavorites ? '' : 'none';
     this.els.showWeather.checked = s.showWeather;
     this.els.showDate.checked = s.showDate;
     this.els.showFavorites.checked = s.showFavorites;
@@ -304,20 +333,11 @@ class NeoDesk {
     this.els.userName.value = this.settings.userName || '';
     this.els.searchEngine.value = this.settings.searchEngine;
     this.els.bgUrl.value = '';
-    
-    const isCelsius = this.settings.tempUnit === 'celsius';
-    this.els.tempC.classList.toggle('active', isCelsius);
-    this.els.tempF.classList.toggle('active', !isCelsius);
-    
-    const is24h = this.settings.clock24h;
-    this.els.clock24h.classList.toggle('active', is24h);
-    this.els.clock12h.classList.toggle('active', !is24h);
-
+    this.els.tempC.classList.toggle('active', this.settings.tempUnit === 'celsius');
+    this.els.tempF.classList.toggle('active', this.settings.tempUnit !== 'celsius');
+    this.els.clock24h.classList.toggle('active', this.settings.clock24h);
+    this.els.clock12h.classList.toggle('active', !this.settings.clock24h);
     this.applyBlur();
-  }
-
-  updateClockFormat() {
-    // Will be applied in startClock
   }
 
   updateName() {
@@ -325,10 +345,26 @@ class NeoDesk {
     this.els.greetingName.textContent = name ? `, ${name}` : '';
   }
 
-  updateEngineIcon() {
+  /* ─── Engine SVG ─── */
+  updateEngineSvg() {
     const engine = this.settings.searchEngine;
-    const info = this.engines[engine] || this.engines.google;
-    this.els.engineIcon.textContent = info.icon;
+    // We keep the same search icon but could change color based on engine
+  }
+
+  updateShortcutUI() {
+    const mod = this.settings.shortcutMod || 'alt';
+    const key = (this.settings.shortcutKey || 't').toUpperCase();
+    const modLabel = mod.charAt(0).toUpperCase() + mod.slice(1);
+    const display = this.els.shortcutDisplay;
+    display.innerHTML = `<span class="mod-key">${modLabel}</span><span class="plus">+</span><span class="char-key">${key}</span>`;
+    this.updateShortcutTip();
+  }
+
+  updateShortcutTip() {
+    const mod = this.settings.shortcutMod || 'alt';
+    const key = (this.settings.shortcutKey || 't').toUpperCase();
+    const modLabel = mod.charAt(0).toUpperCase() + mod.slice(1);
+    this.els.shortcutTip.textContent = `${modLabel}+${key}`;
   }
 
   /* ─── Clock ─── */
@@ -336,101 +372,78 @@ class NeoDesk {
     const update = () => {
       const now = new Date();
       const is24h = this.settings.clock24h;
-      
-      let timeStr = now.toLocaleTimeString('en-US', {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: !is24h
-      });
-
-      const seconds = String(now.getSeconds()).padStart(2, '0');
+      const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: !is24h });
+      const secStr = String(now.getSeconds()).padStart(2, '0');
       const month = now.toLocaleDateString('en-US', { month: 'short' });
-      const day = now.getDate();
-      const year = now.getFullYear();
-
       this.els.clockTime.textContent = timeStr;
-      this.els.clockSeconds.textContent = seconds;
+      this.els.clockSeconds.textContent = secStr;
       this.els.liveTime.textContent = timeStr;
-      this.els.liveDate.textContent = `${month} ${day}, ${year}`;
+      this.els.liveDate.textContent = `${month} ${now.getDate()}, ${now.getFullYear()}`;
     };
-
     update();
     setInterval(update, 1000);
   }
 
   /* ─── Greeting ─── */
   updateGreeting() {
-    const hour = new Date().getHours();
-    let greet = 'Good evening';
-    if (hour < 12) greet = 'Good morning';
-    else if (hour < 17) greet = 'Good afternoon';
-    
-    this.els.greetingText.textContent = greet;
-    
-    // Update greeting periodically (every minute)
-    setInterval(() => {
+    const set = () => {
       const h = new Date().getHours();
       let g = 'Good evening';
       if (h < 12) g = 'Good morning';
       else if (h < 17) g = 'Good afternoon';
       this.els.greetingText.textContent = g;
-    }, 60000);
+    };
+    set();
+    setInterval(set, 60000);
   }
 
   /* ─── Quote ─── */
   async fetchQuote() {
-    const quotes = [
+    const fallback = [
       { text: "The only way to do great work is to love what you do.", author: "Steve Jobs" },
       { text: "Be yourself; everyone else is already taken.", author: "Oscar Wilde" },
-      { text: "Two things are infinite: the universe and human stupidity; and I'm not sure about the universe.", author: "Albert Einstein" },
-      { text: "The future belongs to those who believe in the beauty of their dreams.", author: "Eleanor Roosevelt" },
       { text: "Simplicity is the ultimate sophistication.", author: "Leonardo da Vinci" },
-      { text: "The only impossible journey is the one you never begin.", author: "Tony Robbins" },
-      { text: "Innovation distinguishes between a leader and a follower.", author: "Steve Jobs" },
-      { text: "It does not matter how slowly you go as long as you do not stop.", author: "Confucius" },
+      { text: "The future belongs to those who believe in the beauty of their dreams.", author: "Eleanor Roosevelt" },
+      { text: "Stay hungry, stay foolish.", author: "Steve Jobs" },
+      { text: "Code is like humor. When you have to explain it, it's bad.", author: "Cory House" },
       { text: "The best time to plant a tree was 20 years ago. The second best time is now.", author: "Chinese Proverb" },
       { text: "Everything you can imagine is real.", author: "Pablo Picasso" },
+      { text: "In the middle of difficulty lies opportunity.", author: "Albert Einstein" },
       { text: "Do what you can, with what you have, where you are.", author: "Theodore Roosevelt" },
-      { text: "Life is what happens when you're busy making other plans.", author: "John Lennon" },
-      { text: "The purpose of our lives is to be happy.", author: "Dalai Lama" },
-      { text: "Get busy living or get busy dying.", author: "Stephen King" },
       { text: "You miss 100% of the shots you don't take.", author: "Wayne Gretzky" },
       { text: "Believe you can and you're halfway there.", author: "Theodore Roosevelt" },
       { text: "The secret of getting ahead is getting started.", author: "Mark Twain" },
-      { text: "In the middle of difficulty lies opportunity.", author: "Albert Einstein" },
-      { text: "Stay hungry, stay foolish.", author: "Steve Jobs" },
-      { text: "Code is like humor. When you have to explain it, it's bad.", author: "Cory House" },
+      { text: "Life is what happens when you're busy making other plans.", author: "John Lennon" },
+      { text: "Get busy living or get busy dying.", author: "Stephen King" },
     ];
 
-    // Try API first
     try {
       const res = await fetch('https://api.quotable.io/random');
       if (res.ok) {
         const data = await res.json();
         this.els.quoteText.textContent = `"${data.content}"`;
-        this.els.quoteAuthor.textContent = `— ${data.author}`;
+        this.els.quoteAuthor.textContent = `\u2014 ${data.author}`;
         return;
       }
-    } catch (e) { /* fallback */ }
+    } catch (e) {}
 
-    // Fallback: daily deterministic quote
-    const today = new Date().toDateString();
-    const index = today.split('').reduce((a, c) => a + c.charCodeAt(0), 0) % quotes.length;
-    const q = quotes[index];
+    const idx = new Date().toDateString().split('').reduce((a, c) => a + c.charCodeAt(0), 0) % fallback.length;
+    const q = fallback[idx];
     this.els.quoteText.textContent = `"${q.text}"`;
-    this.els.quoteAuthor.textContent = `— ${q.author}`;
+    this.els.quoteAuthor.textContent = `\u2014 ${q.author}`;
   }
 
   /* ─── Search ─── */
-  searchQuery(engine, query) {
+  searchQuery(engine, query, mode = 'default') {
     const eng = this.engines[engine] || this.engines.google;
-    window.open(eng.url + encodeURIComponent(query), '_blank');
+    const url = eng.modeUrl(query, mode);
+    window.open(url, '_blank');
   }
 
-  handleSearch() {
+  handleSearch(mode = 'default') {
     const query = this.els.searchInput.value.trim();
     if (!query) return;
-    this.searchQuery(this.settings.searchEngine, query);
+    this.searchQuery(this.settings.searchEngine, query, mode);
     this.els.searchInput.value = '';
   }
 
@@ -439,23 +452,17 @@ class NeoDesk {
     const city = this.settings.weatherCity || 'Paris';
     const apiKey = 'a968437efd031f23e6085207a6c4c552';
     const isCelsius = this.settings.tempUnit === 'celsius';
-
     try {
-      const res = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${apiKey}&units=${isCelsius ? 'metric' : 'imperial'}`
-      );
+      const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${apiKey}&units=${isCelsius ? 'metric' : 'imperial'}`);
       const data = await res.json();
-
       if (data.cod !== 200) throw new Error(data.message);
-
       this.els.weatherCity.textContent = data.name;
-      const temp = Math.round(data.main.temp);
-      this.els.weatherTemp.textContent = `${temp}°${isCelsius ? 'C' : 'F'}`;
+      this.els.weatherTemp.textContent = `${Math.round(data.main.temp)}\u00B0${isCelsius ? 'C' : 'F'}`;
       this.els.weatherIcon.src = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
       this.els.weatherIcon.alt = data.weather[0].description || 'Weather';
     } catch (err) {
       this.els.weatherCity.textContent = city;
-      this.els.weatherTemp.textContent = '--°';
+      this.els.weatherTemp.textContent = '--\u00B0';
       this.els.weatherIcon.src = '';
     }
   }
@@ -478,48 +485,37 @@ class NeoDesk {
   /* ─── Favorites ─── */
   renderFavorites() {
     this.els.favGrid.innerHTML = '';
-
     if (this.favorites.length === 0) {
-      this.els.favGrid.innerHTML = `
-        <div class="fav-empty" style="grid-column: 1/-1; text-align: center; padding: 20px; color: var(--text-muted); font-size: 14px;">
-          No links yet. Click <strong>+ Add</strong> to add your first!
-        </div>
-      `;
+      this.els.favGrid.innerHTML = '<div class="fav-item-empty">No links yet. Click <strong>+ Add</strong> to add your first!</div>';
       return;
     }
-
     this.favorites.forEach((fav, i) => {
       const item = document.createElement('a');
       item.className = 'fav-item';
       item.href = fav.url || '#';
       item.target = '_blank';
       item.rel = 'noopener noreferrer';
-      item.style.setProperty('--fav-color', fav.color || '#4CAF50');
-
       const initial = (fav.name || '?').charAt(0).toUpperCase();
-
       item.innerHTML = `
-        <div class="fav-icon-wrapper" style="background: ${fav.color || '#4CAF50'}">${initial}</div>
+        <div class="fav-icon-wrapper" style="background:${fav.color || '#4CAF50'}">${initial}</div>
         <span class="fav-item-name">${fav.name || 'Link'}</span>
         <div class="fav-item-actions">
-          <button class="fav-item-action edit-fav" data-index="${i}" title="Edit">✎</button>
-          <button class="fav-item-action del-fav" data-index="${i}" title="Delete">✕</button>
+          <button class="fav-item-action edit-fav" data-index="${i}" title="Edit">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+          <button class="fav-item-action del-fav" data-index="${i}" title="Delete">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          </button>
         </div>
       `;
-
-      // Prevent nav on action clicks
       item.querySelector('.edit-fav').addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
+        e.preventDefault(); e.stopPropagation();
         this.editFavorite(i);
       });
-
       item.querySelector('.del-fav').addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
+        e.preventDefault(); e.stopPropagation();
         this.deleteFavorite(i);
       });
-
       this.els.favGrid.appendChild(item);
     });
   }
@@ -527,7 +523,6 @@ class NeoDesk {
   openFavEditor(fav = null, index = null) {
     this.editingFavIndex = index;
     this.els.favEditor.classList.remove('hidden');
-
     if (fav) {
       this.els.favName.value = fav.name || '';
       this.els.favUrl.value = fav.url || '';
@@ -539,9 +534,7 @@ class NeoDesk {
       this.els.favColor.value = '#4CAF50';
       this.els.favDelete.classList.add('hidden');
     }
-
     setTimeout(() => this.els.favName.focus(), 100);
-    this.els.favEditor.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
   closeFavEditor() {
@@ -551,55 +544,39 @@ class NeoDesk {
 
   saveFavEditor() {
     const name = this.els.favName.value.trim() || 'Link';
-    const url = this.els.favUrl.value.trim();
+    let url = this.els.favUrl.value.trim();
     const color = this.els.favColor.value;
-
-    if (!url) {
-      this.showToast('Please enter a URL', 2000);
-      return;
-    }
-
-    // Auto-prepend https://
-    let finalUrl = url;
-    if (!url.startsWith('http://') && !url.startsWith('https://')) {
-      finalUrl = 'https://' + url;
-    }
-
-    const fav = { name, url: finalUrl, color };
-
+    if (!url) { this.toast('Please enter a URL'); return; }
+    if (!url.startsWith('http://') && !url.startsWith('https://')) url = 'https://' + url;
+    const fav = { name, url, color };
     if (this.editingFavIndex !== null) {
       this.favorites[this.editingFavIndex] = fav;
-      this.showToast('Link updated ✏️', 1500);
+      this.toast('Link updated');
     } else {
       this.favorites.push(fav);
-      this.showToast('Link added ✨', 1500);
+      this.toast('Link added');
     }
-
     this.saveFavorites();
     this.renderFavorites();
     this.closeFavEditor();
   }
 
-  editFavorite(index) {
-    const fav = this.favorites[index];
-    this.openFavEditor(fav, index);
-  }
+  editFavorite(index) { this.openFavEditor(this.favorites[index], index); }
 
   deleteFavorite(index) {
-    const name = this.favorites[index]?.name || 'this link';
-    if (!confirm(`Delete "${name}"?`)) return;
+    if (!confirm(`Delete "${this.favorites[index]?.name || 'this link'}"?`)) return;
     this.favorites.splice(index, 1);
     this.saveFavorites();
     this.renderFavorites();
     this.closeFavEditor();
-    this.showToast('Link deleted 🗑️', 1500);
+    this.toast('Link deleted');
   }
 
   /* ─── Terminal ─── */
   terminalOpen() {
     this.terminalActive = true;
     this.els.terminal.classList.add('active');
-    setTimeout(() => this.els.terminalInput.focus(), 150);
+    setTimeout(() => this.els.terminalInput.focus(), 120);
   }
 
   terminalClose() {
@@ -617,87 +594,121 @@ class NeoDesk {
 
   terminalClear() {
     this.els.terminalOutput.innerHTML = '';
-    this.terminalPrint('NeoDesk Terminal v2.0 — Type /help for commands', 'info');
+    this.terminalPrint('NeoDesk Terminal v2.0 -- Type /help for commands', 'info');
   }
 
   terminalHelp() {
     this.terminalClear();
-    this.terminalPrint('╔══════════════════════════════════╗', 'info');
-    this.terminalPrint('║      NeoDesk Terminal Commands   ║', 'info');
-    this.terminalPrint('╚══════════════════════════════════╝', 'info');
+    this.terminalPrint('NeoDesk Terminal Commands:', 'info');
     this.terminalPrint('');
-    this.terminalPrint('  /g <query>     →  Google Search', 'info');
-    this.terminalPrint('  /yt <query>    →  YouTube Search', 'info');
-    this.terminalPrint('  /img <query>   →  Google Images', 'info');
-    this.terminalPrint('  /map <query>   →  Google Maps', 'info');
-    this.terminalPrint('  /wiki <query>  →  Wikipedia', 'info');
-    this.terminalPrint('  /ddg <query>   →  DuckDuckGo', 'info');
-    this.terminalPrint('  /reddit <q>    →  Reddit', 'info');
-    this.terminalPrint('  /gh <query>    →  GitHub', 'info');
-    this.terminalPrint('  /s <query>     →  Default Search', 'info');
-    this.terminalPrint('  /weather <city>→  Set weather city', 'info');
-    this.terminalPrint('  /theme <mode>  →  dark|light|system', 'info');
-    this.terminalPrint('  /time          →  Show current time', 'info');
-    this.terminalPrint('  /date          →  Show current date', 'info');
-    this.terminalPrint('  /todo          →  Open Todoist', 'info');
-    this.terminalPrint('  /clear         →  Clear terminal', 'info');
-    this.terminalPrint('  /help          →  Show this message', 'info');
+    this.terminalPrint('  /g <query>        Google Search');
+    this.terminalPrint('  /yt <query>       YouTube Search');
+    this.terminalPrint('  /img <query>      Image Search');
+    this.terminalPrint('  /map <query>      Maps Search');
+    this.terminalPrint('  /wiki <query>     Wikipedia');
+    this.terminalPrint('  /ddg <query>      DuckDuckGo');
+    this.terminalPrint('  /reddit <q>       Reddit Search');
+    this.terminalPrint('  /gh <query>       GitHub Search');
+    this.terminalPrint('  /s <query>        Default Search');
+    this.terminalPrint('  /weather <city>   Set weather city');
+    this.terminalPrint('  /theme <mode>     dark|light|system');
+    this.terminalPrint('  /time             Show time');
+    this.terminalPrint('  /date             Show date');
+    this.terminalPrint('  /todo             Open Todoist');
+    this.terminalPrint('  /clear            Clear terminal');
+    this.terminalPrint('  /help             Show this message');
     this.terminalPrint('');
-    this.terminalPrint('  Tip: Just type anything to search!', 'info');
+    this.terminalPrint('  Tip: Just type anything to search!');
   }
 
   terminalExecute(input) {
     const trimmed = input.trim();
     if (!trimmed) return;
-
-    this.terminalPrint(`❯ ${trimmed}`, 'input');
-
+    this.terminalPrint(`> ${trimmed}`, 'input');
     const [cmd, ...args] = trimmed.split(' ');
     const query = args.join(' ');
-
     if (this.terminalCommands[cmd]) {
-      const result = this.terminalCommands[cmd](query);
-      if (result === true) {
-        // command handled, nothing extra
-      }
+      this.terminalCommands[cmd](query);
     } else if (cmd.startsWith('/')) {
-      this.terminalPrint(`Unknown command: ${cmd}. Type /help`, 'error');
+      this.terminalPrint(`Unknown: ${cmd}. Type /help`, 'error');
     } else {
-      // Default: search
-      this.searchQuery(this.settings.searchEngine, trimmed);
-      this.terminalPrint(`Searching: ${trimmed}`, 'success');
+      this.searchQuery(this.settings.searchEngine, trimmed, 'default');
+      this.terminalPrint('Searching...', 'success');
     }
   }
 
   /* ─── Toast ─── */
-  showToast(message, duration = 2500) {
-    const toast = document.createElement('div');
-    toast.className = 'toast';
-    toast.textContent = message;
-    this.els.toastContainer.appendChild(toast);
+  toast(message, duration = 2200) {
+    const t = document.createElement('div');
+    t.className = 'toast';
+    t.textContent = message;
+    this.els.toastContainer.appendChild(t);
+    setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 200); }, duration);
+  }
 
+  /* ─── Shortcut Recording ─── */
+  startShortcutRecording() {
+    if (this.isRecordingShortcut) return;
+    this.isRecordingShortcut = true;
+    this.els.shortcutDisplay.classList.add('recording');
+    this.els.shortcutDisplay.innerHTML = '<span style="color:var(--accent);font-size:11px;">Press keys...</span>';
+
+    const handler = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      let mod = null;
+      let key = null;
+
+      if (e.ctrlKey || e.metaKey) {
+        // Accept Ctrl/Cmd but we'll use alt by default
+      }
+      if (e.altKey) mod = 'alt';
+      else if (e.ctrlKey) mod = 'ctrl';
+      else if (e.metaKey) mod = 'meta';
+
+      if (e.key && !['Control', 'Alt', 'Meta', 'Shift', 'Tab', 'Escape'].includes(e.key)) {
+        key = e.key.toLowerCase();
+      }
+
+      if (mod && key && key.length === 1 && /^[a-z0-9]$/i.test(key)) {
+        this.settings.shortcutMod = mod;
+        this.settings.shortcutKey = key;
+        this.saveSettings();
+        this.updateShortcutUI();
+        this.isRecordingShortcut = false;
+        this.els.shortcutDisplay.classList.remove('recording');
+        document.removeEventListener('keydown', handler);
+        this.toast(`Shortcut set to ${mod.charAt(0).toUpperCase() + mod.slice(1)}+${key.toUpperCase()}`);
+      } else if (e.key === 'Escape') {
+        this.isRecordingShortcut = false;
+        this.els.shortcutDisplay.classList.remove('recording');
+        this.updateShortcutUI();
+        document.removeEventListener('keydown', handler);
+      }
+    };
+
+    // Small delay to avoid capturing the click key
     setTimeout(() => {
-      toast.classList.add('out');
-      setTimeout(() => toast.remove(), 250);
-    }, duration);
+      document.addEventListener('keydown', handler);
+    }, 50);
   }
 
   /* ─── Event Binding ─── */
   bindEvents() {
-    // ── Theme ──
+    // Theme
     this.themeBtns.forEach(btn => {
       btn.addEventListener('click', () => {
         this.setTheme(btn.dataset.theme);
-        this.showToast(`Theme: ${btn.dataset.theme}`, 1500);
+        this.toast(`Theme: ${btn.dataset.theme}`);
       });
     });
 
-    // ── Settings ──
+    // Settings
     this.els.settingsOpen.addEventListener('click', () => {
       this.els.settingsPanel.classList.add('open');
       this.els.settingsOverlay.classList.add('open');
     });
-
     const closeSettings = () => {
       this.els.settingsPanel.classList.remove('open');
       this.els.settingsOverlay.classList.remove('open');
@@ -705,61 +716,60 @@ class NeoDesk {
     this.els.settingsClose.addEventListener('click', closeSettings);
     this.els.settingsOverlay.addEventListener('click', closeSettings);
 
-    // ── User Name ──
+    // Username
     this.els.userName.addEventListener('input', () => {
       this.settings.userName = this.els.userName.value;
       this.updateName();
       this.saveSettings();
     });
 
-    // ── Search Engine ──
+    // Search engine select
     this.els.searchEngine.addEventListener('change', () => {
       this.settings.searchEngine = this.els.searchEngine.value;
-      this.updateEngineIcon();
       this.saveSettings();
-      this.showToast(`Engine: ${this.els.searchEngine.value}`, 1500);
+      this.toast(`Engine: ${this.els.searchEngine.value}`);
     });
 
-    // ── Engine button dropdown ──
+    // Engine dropdown
     this.els.engineBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       this.els.engineDropdown.classList.toggle('hidden');
     });
-
     this.engineOpts.forEach(opt => {
       opt.addEventListener('click', () => {
-        const engine = opt.dataset.engine;
-        this.settings.searchEngine = engine;
-        this.updateEngineIcon();
+        const eng = opt.dataset.engine;
+        this.settings.searchEngine = eng;
         this.saveSettings();
         this.els.engineDropdown.classList.add('hidden');
-        this.showToast(`Engine: ${engine}`, 1000);
+        this.toast(`Engine: ${eng}`);
+      });
+    });
+    document.addEventListener('click', () => this.els.engineDropdown.classList.add('hidden'));
+
+    // Search
+    this.els.searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') this.handleSearch('default');
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        const keys = Object.keys(this.engines);
+        const cur = keys.indexOf(this.settings.searchEngine);
+        const nxt = (cur + 1) % keys.length;
+        this.settings.searchEngine = keys[nxt];
+        this.saveSettings();
+        this.toast(`Engine: ${keys[nxt]}`);
+      }
+    });
+    this.els.searchBtn.addEventListener('click', () => this.handleSearch('default'));
+
+    // Search chips
+    this.searchChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        const mode = chip.dataset.mode;
+        this.handleSearch(mode);
       });
     });
 
-    document.addEventListener('click', () => {
-      this.els.engineDropdown.classList.add('hidden');
-    });
-
-    // ── Search ──
-    this.els.searchInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') this.handleSearch();
-      if (e.key === 'Tab') {
-        e.preventDefault();
-        // Cycle through engines
-        const engines = Object.keys(this.engines);
-        const current = engines.indexOf(this.settings.searchEngine);
-        const next = (current + 1) % engines.length;
-        this.settings.searchEngine = engines[next];
-        this.updateEngineIcon();
-        this.saveSettings();
-        this.showToast(`Engine: ${engines[next]}`, 1000);
-      }
-    });
-
-    this.els.searchBtn.addEventListener('click', () => this.handleSearch());
-
-    // ── Temperature ──
+    // Temperature
     this.els.tempC.addEventListener('click', () => {
       this.settings.tempUnit = 'celsius';
       this.els.tempC.classList.add('active');
@@ -767,7 +777,6 @@ class NeoDesk {
       this.saveSettings();
       this.fetchWeather();
     });
-
     this.els.tempF.addEventListener('click', () => {
       this.settings.tempUnit = 'fahrenheit';
       this.els.tempF.classList.add('active');
@@ -776,14 +785,13 @@ class NeoDesk {
       this.fetchWeather();
     });
 
-    // ── Clock format ──
+    // Clock format
     this.els.clock24h.addEventListener('click', () => {
       this.settings.clock24h = true;
       this.els.clock24h.classList.add('active');
       this.els.clock12h.classList.remove('active');
       this.saveSettings();
     });
-
     this.els.clock12h.addEventListener('click', () => {
       this.settings.clock24h = false;
       this.els.clock12h.classList.add('active');
@@ -791,18 +799,18 @@ class NeoDesk {
       this.saveSettings();
     });
 
-    // ── Background presets ──
-    this.bgPresets.forEach(preset => {
-      preset.addEventListener('click', () => {
-        this.settings.background = preset.dataset.bg;
+    // Background presets
+    this.bgPresets.forEach(p => {
+      p.addEventListener('click', () => {
+        this.settings.background = p.dataset.bg;
         this.settings.bgImage = '';
         this.applyBackground();
         this.saveSettings();
-        this.showToast(`Background: ${preset.dataset.bg}`, 1000);
+        this.toast(`Background: ${p.dataset.bg}`);
       });
     });
 
-    // ── Background upload ──
+    // Background upload
     this.els.bgUpload.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (!file) return;
@@ -812,12 +820,11 @@ class NeoDesk {
         this.settings.bgImage = ev.target.result;
         this.applyBackground();
         this.saveSettings();
-        this.showToast('Background updated 📸', 1500);
+        this.toast('Background updated');
       };
       reader.readAsDataURL(file);
     });
 
-    // ── Background URL ──
     this.els.bgApplyUrl.addEventListener('click', () => {
       const url = this.els.bgUrl.value.trim();
       if (!url) return;
@@ -826,73 +833,64 @@ class NeoDesk {
       this.applyBackground();
       this.saveSettings();
       this.els.bgUrl.value = '';
-      this.showToast('Background updated 🖼️', 1500);
+      this.toast('Background updated');
     });
 
-    // ── Background Blur ──
+    // Blur
     this.els.bgBlur.addEventListener('input', () => {
-      const val = parseInt(this.els.bgBlur.value);
-      this.settings.bgBlur = val;
+      const v = parseInt(this.els.bgBlur.value);
+      this.settings.bgBlur = v;
       this.applyBlur();
       this.saveSettings();
     });
 
-    // ── Widget checkboxes ──
-    this.els.showWeather.addEventListener('change', () => {
-      this.settings.showWeather = this.els.showWeather.checked;
-      this.applyWidgets();
-      this.saveSettings();
+    // Widget checkboxes
+    ['showWeather','showDate','showFavorites','showQuote'].forEach(id => {
+      this.els[id].addEventListener('change', () => {
+        this.settings[id] = this.els[id].checked;
+        this.applyWidgets();
+        this.saveSettings();
+      });
     });
 
-    this.els.showDate.addEventListener('change', () => {
-      this.settings.showDate = this.els.showDate.checked;
-      this.applyWidgets();
-      this.saveSettings();
-    });
-
-    this.els.showFavorites.addEventListener('change', () => {
-      this.settings.showFavorites = this.els.showFavorites.checked;
-      this.applyWidgets();
-      this.saveSettings();
-    });
-
-    this.els.showQuote.addEventListener('change', () => {
-      this.settings.showQuote = this.els.showQuote.checked;
-      this.applyWidgets();
-      this.saveSettings();
-    });
-
-    // ── Reset Settings ──
+    // Reset
     this.els.resetSettings.addEventListener('click', () => {
-      if (!confirm('Reset all settings to default? This cannot be undone.')) return;
+      if (!confirm('Reset all settings to default?')) return;
       localStorage.removeItem('neodesk_settings');
       localStorage.removeItem('neodesk_favorites');
-      localStorage.removeItem('weatherCity');
       this.settings = this.defaultSettings();
       this.favorites = [];
       this.applySettings();
       this.renderFavorites();
       this.fetchWeather();
-      this.showToast('All settings reset 🔄', 2000);
+      this.toast('All settings reset');
     });
 
-    // ── Weather ──
-    this.els.weatherInfo.addEventListener('click', () => this.toggleWeatherEdit());
+    // Shortcut recorder
+    this.els.shortcutDisplay.addEventListener('click', () => this.startShortcutRecording());
+    this.els.shortcutReset.addEventListener('click', () => {
+      this.settings.shortcutMod = 'alt';
+      this.settings.shortcutKey = 't';
+      this.saveSettings();
+      this.updateShortcutUI();
+      this.toast('Shortcut reset to Alt+T');
+    });
 
+    // Weather
+    this.els.weatherInfo.addEventListener('click', () => this.toggleWeatherEdit());
     this.els.weatherSave.addEventListener('click', () => {
       const city = this.els.weatherInput.value.trim();
       if (!city) return;
       this.setWeatherCity(city);
       this.toggleWeatherEdit(false);
-      this.showToast(`Weather: ${city}`, 1500);
+      this.toast(`Weather: ${city}`);
     });
-
     this.els.weatherInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') this.els.weatherSave.click();
       if (e.key === 'Escape') this.toggleWeatherEdit(false);
     });
 
-    // ── Favorites ──
+    // Favorites
     this.els.favAddBtn.addEventListener('click', () => this.openFavEditor());
     this.els.favSave.addEventListener('click', () => this.saveFavEditor());
     this.els.favCancel.addEventListener('click', () => this.closeFavEditor());
@@ -900,66 +898,74 @@ class NeoDesk {
       if (this.editingFavIndex !== null) this.deleteFavorite(this.editingFavIndex);
     });
 
-    // ── Terminal ──
+    // Favorites editor keyboard: Enter to save
+    const favKeyHandler = (e) => {
+      if (e.key === 'Enter' && !this.els.favEditor.classList.contains('hidden')) {
+        this.saveFavEditor();
+      }
+      if (e.key === 'Escape' && !this.els.favEditor.classList.contains('hidden')) {
+        this.closeFavEditor();
+      }
+    };
+    this.els.favName.addEventListener('keydown', favKeyHandler);
+    this.els.favUrl.addEventListener('keydown', favKeyHandler);
+
+    // Terminal
     this.els.terminalLaunch.addEventListener('click', () => this.terminalOpen());
     this.els.terminalClose.addEventListener('click', () => this.terminalClose());
 
-    // Keyboard shortcuts
+    this.els.terminalInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const val = this.els.terminalInput.value;
+        this.els.terminalInput.value = '';
+        this.terminalExecute(val);
+      }
+    });
+
+    // Global keyboard
     document.addEventListener('keydown', (e) => {
-      // Alt+T toggle terminal
-      if (e.altKey && e.key.toLowerCase() === 't') {
+      // Skip if recording shortcut
+      if (this.isRecordingShortcut) return;
+
+      const mod = this.settings.shortcutMod || 'alt';
+      const key = (this.settings.shortcutKey || 't').toLowerCase();
+      let modPressed = false;
+      if (mod === 'alt') modPressed = e.altKey;
+      else if (mod === 'ctrl') modPressed = e.ctrlKey;
+      else if (mod === 'meta') modPressed = e.metaKey;
+
+      if (modPressed && e.key.toLowerCase() === key) {
         e.preventDefault();
         if (this.terminalActive) this.terminalClose();
         else this.terminalOpen();
         return;
       }
 
-      // Escape closes everything
       if (e.key === 'Escape') {
-        if (this.terminalActive) {
-          this.terminalClose();
-          return;
-        }
+        if (this.terminalActive) { this.terminalClose(); return; }
         if (this.els.settingsPanel.classList.contains('open')) {
           this.els.settingsPanel.classList.remove('open');
           this.els.settingsOverlay.classList.remove('open');
           return;
         }
-        if (this.weatherEditOpen) {
-          this.toggleWeatherEdit(false);
-          return;
-        }
-        if (!this.els.favEditor.classList.contains('hidden')) {
-          this.closeFavEditor();
-          return;
-        }
+        if (this.weatherEditOpen) { this.toggleWeatherEdit(false); return; }
+        if (!this.els.favEditor.classList.contains('hidden')) { this.closeFavEditor(); return; }
       }
 
-      // Focus search with /
-      if (!this.terminalActive && e.key === '/' && !['INPUT', 'TEXTAREA'].includes(e.target.tagName)) {
+      if (!this.terminalActive && e.key === '/' && !['INPUT','TEXTAREA'].includes(e.target.tagName)) {
         e.preventDefault();
         this.els.searchInput.focus();
       }
     });
 
-    // Terminal input
-    this.els.terminalInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        const input = this.els.terminalInput.value;
-        this.els.terminalInput.value = '';
-        this.terminalExecute(input);
-      }
-    });
-
-    // ── System theme change listener ──
+    // System theme listener
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
       if (this.settings.theme === 'system') this.applyTheme();
     });
 
-    // ── Initial focus ──
-    // Focus search on load (but not on mobile to avoid keyboard popup)
+    // Focus search on desktop
     if (window.innerWidth > 768) {
-      setTimeout(() => this.els.searchInput.focus(), 500);
+      setTimeout(() => this.els.searchInput.focus(), 400);
     }
   }
 }
