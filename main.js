@@ -117,7 +117,8 @@ class NeoDesk {
       '/date':   () => this.terminalPrint(`Current date: ${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`, 'info'),
       '/weather':(q) => { if (q) { this.setWeatherCity(q); this.terminalPrint(`Weather set to: ${q}`, 'success'); } else { this.terminalPrint('Usage: /weather <city>', 'info'); } return true; },
       '/theme':  (q) => { if (['dark','light','system'].includes(q)) { this.setTheme(q); this.terminalPrint(`Theme: ${q}`, 'success'); } else { this.terminalPrint('Usage: /theme <dark|light|system>', 'info'); } return true; },
-      '/todo':   () => { window.open('https://todoist.com', '_blank'); return true; }
+      '/todo':   () => { window.open('https://todoist.com', '_blank'); return true; },
+      '/distract':() => { this._openDistract(); return true; }
     };
 
     this.init();
@@ -731,14 +732,14 @@ class NeoDesk {
 
   terminalClear() {
     this.els.terminalOutput.innerHTML = '';
-    this.terminalPrint('NeoDesk Terminal v2.0 -- Type /help for commands', 'info');
+    this.terminalPrint('NeoDesk Terminal v3.0 -- Type /help for commands, /distract for mini programs', 'info');
   }
 
   terminalHelp() {
     this.terminalClear();
     this.terminalPrint('NeoDesk Terminal Commands:', 'info');
     this.terminalPrint('');
-    const cmds = [['/g &lt;query&gt;','Google Search'],['/yt &lt;query&gt;','YouTube Search'],['/img &lt;query&gt;','Image Search'],['/map &lt;query&gt;','Maps Search'],['/wiki &lt;query&gt;','Wikipedia'],['/ddg &lt;query&gt;','DuckDuckGo'],['/reddit &lt;q&gt;','Reddit Search'],['/gh &lt;query&gt;','GitHub Search'],['/s &lt;query&gt;','Default Search'],['/weather &lt;city&gt;','Set weather city'],['/theme &lt;mode&gt;','dark|light|system'],['/time','Show time'],['/date','Show date'],['/todo','Open Todoist'],['/clear','Clear terminal'],['/help','Show this help']];
+    const cmds = [['/g &lt;query&gt;','Google Search'],['/yt &lt;query&gt;','YouTube Search'],['/img &lt;query&gt;','Image Search'],['/map &lt;query&gt;','Maps Search'],['/wiki &lt;query&gt;','Wikipedia'],['/ddg &lt;query&gt;','DuckDuckGo'],['/reddit &lt;q&gt;','Reddit Search'],['/gh &lt;query&gt;','GitHub Search'],['/s &lt;query&gt;','Default Search'],['/weather &lt;city&gt;','Set weather city'],['/theme &lt;mode&gt;','dark|light|system'],['/time','Show time'],['/date','Show date'],['/todo','Open Todoist'],['/distract','Mini programs'],['/clear','Clear terminal'],['/help','Show this help']];
     cmds.forEach(([c,d]) => { this.terminalPrint('  <span class="hl">' + c + '</span>  ' + d); });
     this.terminalPrint('');
     this.terminalPrint('  Tip: Just type anything to search!');
@@ -1153,6 +1154,18 @@ class NeoDesk {
       }
     });
 
+    // Distract terminal input
+    const dInput = document.getElementById('distract-input');
+    if (dInput) {
+      dInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          const val = dInput.value;
+          dInput.value = '';
+          this._distractExec(val);
+        }
+      });
+    }
+
     // Global keyboard
     document.addEventListener('keydown', (e) => {
       // Skip if recording shortcut
@@ -1199,9 +1212,5 @@ class NeoDesk {
       setTimeout(() => this.els.searchInput.focus(), 400);
     }
   }
-}
 
-/* ─── Bootstrap ─── */
-document.addEventListener('DOMContentLoaded', () => {
-  window.neoDesk = new NeoDesk();
-});
+}
