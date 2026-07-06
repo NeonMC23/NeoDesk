@@ -1236,28 +1236,8 @@ class NeoDesk {
     // Strategy: autofocus on load, retry every 200ms for 4 seconds,
     // and also focus on first user interaction with the page.
     
-    // ═══ Focus search on load (gentle, no stealing) ═══
-    // The autofocus HTML attribute handles the initial focus.
-    // We just ensure it works once on desktop after page load.
-    if (window.innerWidth > 768 && this.els.searchInput) {
-      // Single delayed attempt, no select() to avoid clearing text
-      setTimeout(function() {
-        if (window.neoDesk && window.neoDesk.els && window.neoDesk.els.searchInput) {
-          window.neoDesk.els.searchInput.focus();
-        }
-      }, 300);
-    }
-    
-    // Re-focus when user comes back to the tab (if they were typing elsewhere)
-    document.addEventListener('visibilitychange', function() {
-      if (!document.hidden && window.neoDesk && window.neoDesk.els && window.neoDesk.els.searchInput) {
-        // Don't steal focus if the user is already interacting with something
-        var active = document.activeElement;
-        if (active === document.body || active === document.getElementById('focus-trap')) {
-          window.neoDesk.els.searchInput.focus();
-        }
-      }
-    });
+    // ═══ Minimal focus — autofocus HTML attribute handles it ═══
+    // No JS focus logic to avoid stealing user's cursor.
   }
 
 }
