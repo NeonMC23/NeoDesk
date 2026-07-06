@@ -1,12 +1,12 @@
 /* ═══════════════════════════════════════════
-   NeoDesk v2 — Main Application
+   NeoDesk v4 — Main Application
    ═══════════════════════════════════════════ */
 
 'use strict';
 
 class NeoDesk {
   constructor() {
-    this.settings = this.loadSettings();
+    this.settings = this._makeAutoSave(this.loadSettings());
     this.favorites = this.loadFavorites();
     this.terminalActive = false;
     this.editingFavIndex = null;
@@ -125,6 +125,31 @@ class NeoDesk {
   }
 
   /* ─── Init ─── */
+
+  /* ─── Auto-save Proxy ─── */
+  _makeAutoSave(obj) {
+    var saveTimer = null;
+    var self = this;
+    return new Proxy(obj, {
+      set: function(target, key, value) {
+        target[key] = value;
+        if (saveTimer) clearTimeout(saveTimer);
+        saveTimer = setTimeout(function() {
+          try { localStorage.setItem('neodesk_settings', JSON.stringify(target)); } catch(e) {}
+        }, 50);
+        return true;
+      },
+      deleteProperty: function(target, key) {
+        delete target[key];
+        if (saveTimer) clearTimeout(saveTimer);
+        saveTimer = setTimeout(function() {
+          try { localStorage.setItem('neodesk_settings', JSON.stringify(target)); } catch(e) {}
+        }, 50);
+        return true;
+      }
+    });
+  }
+
   init() {
     this.cacheDOM();
     this.updateShortcutTip();
@@ -1207,10 +1232,57 @@ class NeoDesk {
       if (this.settings.theme === 'system') this.applyTheme();
     });
 
-    // Focus search on desktop
-    if (window.innerWidth > 768) {
-      setTimeout(() => this.els.searchInput.focus(), 400);
+    // ═══ Aggressive focus: grab focus from browser URL bar ═══
+    // Strategy: autofocus on load, retry every 200ms for 4 seconds,
+    // and also focus on first user interaction with the page.
+    
+    // ═══ Aggressive focus: grab focus from browser URL bar ═══
+    
+    function _tryFocus() {
+      var trap = document.getElementById('focus-trap');
+      var input = null;
+      if (window.neoDesk && window.neoDesk.els) input = window.neoDesk.els.searchInput;
+      if (!input) input = document.getElementById('search-input');
+      
+      if (input && input.focus) {
+        // Use the focus trap first (some browsers release URL bar focus this way)
+        if (trap) { trap.focus(); trap.select(); }
+        // Then immediately focus the search input
+        input.focus();
+        try { input.select(); } catch(e) {}
+      }
     }
+    
+    // 1. Immediate attempt (right after DOMContentLoaded)
+    _tryFocus();
+    
+    // 2. Retry every 150ms for 5 seconds (beats browser URL bar stealing focus)
+    var focusAttempts = 0;
+    var focusInterval = setInterval(function() {
+      _tryFocus();
+      focusAttempts++;
+      if (focusAttempts > 35) clearInterval(focusInterval);
+    }, 150);
+    
+    // 3. Focus on first user interaction (click/touch/key)
+    var firstInteraction = function() {
+      _tryFocus();
+      document.removeEventListener('click', firstInteraction);
+      document.removeEventListener('touchstart', firstInteraction);
+      document.removeEventListener('keydown', firstInteraction);
+    };
+    document.addEventListener('click', firstInteraction, true);
+    document.addEventListener('touchstart', firstInteraction, true);
+    document.addEventListener('keydown', firstInteraction, true);
+    
+    // 4. When the page becomes visible (user switches back to tab)
+    document.addEventListener('visibilitychange', function() {
+      if (!document.hidden) setTimeout(_tryFocus, 100);
+    });
+    
+    // 5. On first scroll / wheel interaction
+    var firstScroll = function() { _tryFocus(); document.removeEventListener('wheel', firstScroll); };
+    document.addEventListener('wheel', firstScroll, {passive:true});
   }
 
 }

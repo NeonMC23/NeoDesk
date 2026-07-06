@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <input type="text" id="focus-trap" style="position:fixed;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none" tabindex="-1" aria-hidden="true">
 
   <!-- ═══ BACKGROUND OVERLAY ═══ -->
   <div id="bg-overlay"></div>
@@ -332,7 +333,7 @@
           </div>
         </div>
         <div class="search-input-wrap">
-          <input type="text" id="search-input" placeholder="Search the web..." spellcheck="false" autocomplete="off">
+          <input type="text" id="search-input" placeholder="Search the web..." spellcheck="false" autocomplete="off" autofocus>
           <div id="search-suggestions" class="search-suggestions hidden"></div>
         </div>
         <button id="search-btn" class="search-btn" aria-label="Search">
