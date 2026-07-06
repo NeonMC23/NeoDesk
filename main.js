@@ -1063,15 +1063,11 @@ class NeoDesk {
     this.els.bgUpload.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        this.settings.background = 'custom';
-        this.settings.bgImage = ev.target.result;
-        this.applyBackground();
-        this.saveSettings();
-        this.toast('Background updated');
-      };
-      reader.readAsDataURL(file);
+      this.settings.background = 'custom';
+      this.settings.bgImage = URL.createObjectURL(file);
+      this.applyBackground();
+      this.saveSettings();
+      this.toast('Background set (session only). Use a URL for persistent background.');
     });
 
     this.els.bgApplyUrl.addEventListener('click', () => {
