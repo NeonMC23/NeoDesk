@@ -135,15 +135,42 @@ class NeoDesk {
         target[key] = value;
         if (saveTimer) clearTimeout(saveTimer);
         saveTimer = setTimeout(function() {
-          try { localStorage.setItem('neodesk_settings', JSON.stringify(target)); } catch(e) {}
+          try {
+            // Stocker bgImage séparément pour éviter les problèmes de quota
+            if (key === 'bgImage') {
+              var toSave = {};
+              for (var k in target) {
+                if (k !== 'bgImage') toSave[k] = target[k];
+              }
+              localStorage.setItem('neodesk_settings', JSON.stringify(toSave));
+              localStorage.setItem('neodesk_bgimage', value || '');
+            } else {
+              // Si on change un preset, on garde aussi bgImage qui était déjà stocké
+              var bgImg = localStorage.getItem('neodesk_bgimage');
+              var toSave = {};
+              for (var k in target) {
+                if (k !== 'bgImage') toSave[k] = target[k];
+              }
+              localStorage.setItem('neodesk_settings', JSON.stringify(toSave));
+            }
+          } catch(e) {}
         }, 50);
         return true;
       },
       deleteProperty: function(target, key) {
         delete target[key];
+        if (key === 'bgImage') {
+          try { localStorage.removeItem('neodesk_bgimage'); } catch(e) {}
+        }
         if (saveTimer) clearTimeout(saveTimer);
         saveTimer = setTimeout(function() {
-          try { localStorage.setItem('neodesk_settings', JSON.stringify(target)); } catch(e) {}
+          try {
+            var toSave = {};
+            for (var k in target) {
+              if (k !== 'bgImage') toSave[k] = target[k];
+            }
+            localStorage.setItem('neodesk_settings', JSON.stringify(toSave));
+          } catch(e) {}
         }, 50);
         return true;
       }
@@ -256,7 +283,13 @@ class NeoDesk {
   loadSettings() {
     try {
       const saved = localStorage.getItem('neodesk_settings');
-      if (saved) return { ...this.defaultSettings(), ...JSON.parse(saved) };
+      var s = saved ? { ...this.defaultSettings(), ...JSON.parse(saved) } : { ...this.defaultSettings() };
+      // Restaurer l'image de fond depuis sa clé dédiée
+      try {
+        var bg = localStorage.getItem('neodesk_bgimage');
+        if (bg) s.bgImage = bg;
+      } catch(e) {}
+      return s;
     } catch (e) { /* ignore */ }
     return this.defaultSettings();
   }
@@ -1107,6 +1140,7 @@ class NeoDesk {
       if (!confirm('Reset all settings to default?')) return;
       localStorage.removeItem('neodesk_settings');
       localStorage.removeItem('neodesk_favorites');
+      localStorage.removeItem('neodesk_bgimage');
       this.settings = this.defaultSettings();
       this.favorites = [];
       this.applySettings();
