@@ -236,7 +236,7 @@ body.has-bg #bg-overlay { background: transparent; }
   line-height: 1.2;
   flex-shrink: 0;
 }
-#greeting-name { font-weight: 400; color: var(--text-primary); }
+/*#greeting-name { font-weight: 400; color: var(--text-primary); }
 .greeting-comma { font-weight: 400; color: var(--text-secondary); }
 
 /* ─── Clock ─── */
