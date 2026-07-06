@@ -1063,11 +1063,15 @@ class NeoDesk {
     this.els.bgUpload.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (!file) return;
-      this.settings.background = 'custom';
-      this.settings.bgImage = URL.createObjectURL(file);
-      this.applyBackground();
-      this.saveSettings();
-      this.toast('Background set (session only). Use a URL for persistent background.');
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        this.settings.background = 'custom';
+        this.settings.bgImage = ev.target.result;
+        this.applyBackground();
+        this.saveSettings();
+        this.toast('Background updated');
+      };
+      reader.readAsDataURL(file);
     });
 
     this.els.bgApplyUrl.addEventListener('click', () => {
@@ -1232,53 +1236,28 @@ class NeoDesk {
     // Strategy: autofocus on load, retry every 200ms for 4 seconds,
     // and also focus on first user interaction with the page.
     
-    // ═══ Aggressive focus: grab focus from browser URL bar ═══
-    
-    function _tryFocus() {
-      var trap = document.getElementById('focus-trap');
-      var input = null;
-      if (window.neoDesk && window.neoDesk.els) input = window.neoDesk.els.searchInput;
-      if (!input) input = document.getElementById('search-input');
-      
-      if (input && input.focus) {
-        // Use the focus trap first (some browsers release URL bar focus this way)
-        if (trap) { trap.focus(); trap.select(); }
-        // Then immediately focus the search input
-        input.focus();
-        try { input.select(); } catch(e) {}
-      }
+    // ═══ Focus search on load (gentle, no stealing) ═══
+    // The autofocus HTML attribute handles the initial focus.
+    // We just ensure it works once on desktop after page load.
+    if (window.innerWidth > 768 && this.els.searchInput) {
+      // Single delayed attempt, no select() to avoid clearing text
+      setTimeout(function() {
+        if (window.neoDesk && window.neoDesk.els && window.neoDesk.els.searchInput) {
+          window.neoDesk.els.searchInput.focus();
+        }
+      }, 300);
     }
     
-    // 1. Immediate attempt (right after DOMContentLoaded)
-    _tryFocus();
-    
-    // 2. Retry every 150ms for 5 seconds (beats browser URL bar stealing focus)
-    var focusAttempts = 0;
-    var focusInterval = setInterval(function() {
-      _tryFocus();
-      focusAttempts++;
-      if (focusAttempts > 35) clearInterval(focusInterval);
-    }, 150);
-    
-    // 3. Focus on first user interaction (click/touch/key)
-    var firstInteraction = function() {
-      _tryFocus();
-      document.removeEventListener('click', firstInteraction);
-      document.removeEventListener('touchstart', firstInteraction);
-      document.removeEventListener('keydown', firstInteraction);
-    };
-    document.addEventListener('click', firstInteraction, true);
-    document.addEventListener('touchstart', firstInteraction, true);
-    document.addEventListener('keydown', firstInteraction, true);
-    
-    // 4. When the page becomes visible (user switches back to tab)
+    // Re-focus when user comes back to the tab (if they were typing elsewhere)
     document.addEventListener('visibilitychange', function() {
-      if (!document.hidden) setTimeout(_tryFocus, 100);
+      if (!document.hidden && window.neoDesk && window.neoDesk.els && window.neoDesk.els.searchInput) {
+        // Don't steal focus if the user is already interacting with something
+        var active = document.activeElement;
+        if (active === document.body || active === document.getElementById('focus-trap')) {
+          window.neoDesk.els.searchInput.focus();
+        }
+      }
     });
-    
-    // 5. On first scroll / wheel interaction
-    var firstScroll = function() { _tryFocus(); document.removeEventListener('wheel', firstScroll); };
-    document.addEventListener('wheel', firstScroll, {passive:true});
   }
 
 }
