@@ -1,35 +1,35 @@
-# NeoDesk v4 ✨
+# 🚀 NeoDesk v4 ✨
 
 > **v4** — A modern, beautiful new tab dashboard with terminal, weather, search, favorites & settings.
 
-NeoDesk transforms your browser's new tab page into a powerful, customizable dashboard featuring a live clock, weather widget, quick links, a built-in terminal, and a full settings panel — all saved to your browser's localStorage.
+NeoDesk transforms your browser's new tab page into a powerful, customizable productivity dashboard featuring a live clock, weather widget, smart search, quick links, built-in terminal, and a full settings system — all stored locally in your browser via `localStorage`.
 
-**[🌐 Live Demo](https://neonmc23.github.io/NeoDesk/)**
+**🌐 [Live Demo](https://neonmc23.github.io/NeoDesk/)**
 
 ---
 
 ## ✨ Features
 
 | Feature | Details |
-|---------|---------|
-| 🕐 **Live Clock** | Analog-style digital clock with seconds, 12h/24h support |
-| 🌤️ **Weather** | Real-time weather from OpenWeatherMap, configurable city |
-| 🔍 **Smart Search** | Supports Google, DuckDuckGo, Bing, Brave, Yahoo — switch via Tab key |
-| 💻 **Terminal** | Press `Alt+T` for a full terminal with 15+ commands |
-| 🔗 **Favorites** | Quick links grid with colors, edit/delete, drag-free |
-| 🎨 **Themes** | Dark, Light, and System (follows OS preference) |
-| 🖼️ **Backgrounds** | 7 gradient presets + custom image upload/URL |
-| 🔲 **Background Blur** | Adjustable blur overlay for readability |
-| 🧩 **Widget Toggle** | Show/hide weather, date, quotes, favorites |
-| 💾 **LocalStorage** | All settings persist across sessions |
-| 📱 **Responsive** | Fully mobile-friendly with adaptive layout |
-| 🎯 **Keyboard Shortcuts** | `/` focus search, `Tab` cycle engines, `Alt+T` terminal, `Esc` close panels |
+|--------|---------|
+| 🕐 **Live Clock** | Digital clock with seconds, 12h/24h format |
+| 🌤️ **Weather** | Real-time weather via OpenWeatherMap (custom city) |
+| 🔍 **Smart Search** | Google, DuckDuckGo, Bing, Brave, Yahoo (Tab switch) |
+| 💻 **Terminal** | Built-in terminal (`Alt + T`) with 15+ commands |
+| ⭐ **Favorites** | Custom quick links grid with edit/delete support |
+| 🎨 **Themes** | Dark / Light / System mode |
+| 🖼️ **Backgrounds** | Gradient presets + custom image/URL |
+| 🌫️ **Blur System** | Adjustable UI blur for readability |
+| 🧩 **Widgets Toggle** | Enable/disable weather, quotes, date, favorites |
+| 💾 **LocalStorage** | Persistent configuration (no backend) |
+| 📱 **Responsive UI** | Fully mobile-friendly layout |
+| ⌨️ **Keyboard Shortcuts** | Fast navigation and actions |
 
 ---
 
 ## 🚀 Quick Start
 
-### 1. Clone & Open
+### 1. Clone & Run
 
 ```bash
 git clone https://github.com/NeonMC23/NeoDesk.git
@@ -37,13 +37,14 @@ cd NeoDesk
 open index.html
 ```
 
-### 2. Set as New Tab Page
+### 2. Use as New Tab Page
 
 **Chrome / Edge:**
-1. Install a new tab override extension (e.g. [Custom New Tab](https://chrome.google.com/webstore/detail/new-tab-override/fjcjgmepmojgkcfdhpngbnmjnfhppooh))
-2. Point it to: `file:///path/to/NeoDesk/index.html`
+Install a New Tab override extension.
+Set URL to:
+`file:///path/to/NeoDesk/index.html`
 
-> 💡 For a better experience, host the page locally or deploy to GitHub Pages.
+💡 *For best experience, use GitHub Pages or a local server.*
 
 ---
 
@@ -52,30 +53,32 @@ open index.html
 | Key | Action |
 |-----|--------|
 | `/` | Focus search bar |
-| `Tab` | Cycle search engine |
+| `Tab` | Switch search engine |
 | `Enter` | Execute search |
-| `Alt+T` | Toggle terminal |
-| `Esc` | Close panels / terminal |
+| `Alt + T` | Open terminal |
+| `Esc` | Close panels |
 
 ---
 
+## 💻 Terminal System
 
-| `/distract` | Open Distract mini-programs terminal |
-## 💻 Terminal Commands
+Open the terminal with: **`Alt + T`**
+
+### 📌 Commands
 
 | Command | Description |
 |---------|-------------|
-| `/g <query>` | Google Search |
-| `/yt <query>` | YouTube Search |
-| `/img <query>` | Google Images |
+| `/g <query>` | Google search |
+| `/yt <query>` | YouTube search |
+| `/img <query>` | Image search |
 | `/map <query>` | Google Maps |
 | `/wiki <query>` | Wikipedia |
 | `/ddg <query>` | DuckDuckGo |
-| `/reddit <q>` | Reddit Search |
-| `/gh <query>` | GitHub Search |
-| `/s <query>` | Default Engine Search |
+| `/reddit <query>` | Reddit search |
+| `/gh <query>` | GitHub search |
+| `/s <query>` | Default search engine |
 | `/weather <city>` | Set weather city |
-| `/theme <mode>` | Set theme (dark / light / system) |
+| `/theme <mode>` | Set theme (dark/light/system) |
 | `/time` | Show current time |
 | `/date` | Show current date |
 | `/todo` | Open Todoist |
@@ -86,29 +89,45 @@ open index.html
 
 ## ⚙️ Settings
 
-All settings are saved to `localStorage` and persist between sessions.
+All settings are stored locally using `localStorage`.
 
-### Available Settings
+### 🎨 Appearance
+- **Theme:** Dark / Light / System
+- **Background:** Gradients or custom image
+- **Blur intensity:** 0–20px
 
-- **Theme**: Dark / Light / System
-- **Search Engine**: Google, DuckDuckGo, Bing, Brave, Yahoo
-- **Temperature**: Celsius / Fahrenheit
-- **Clock Format**: 12h / 24h
-- **Display Name**: Custom greeting name
-- **Background**: 7 gradient presets or custom image
-- **Background Blur**: 0–20px
-- **Widgets**: Show/hide weather, date, quotes, favorites
-- **Reset**: One-click reset to defaults
+### 🔎 Search
+**Engine selection:**
+- Google
+- DuckDuckGo
+- Bing
+- Brave
+- Yahoo
+
+### 🧩 Widgets
+- Weather toggle
+- Quotes toggle
+- Date toggle
+- Favorites toggle
+
+### ⚙️ System
+- Clock format (12h / 24h)
+- Temperature unit (C / F)
+- Display name personalization
+- Reset to default
 
 ---
 
-## 🛠️ Tech Stack
+## 🧱 Tech Stack
 
-- Vanilla JavaScript (ES6+)
-- CSS3 with custom properties, animations, backdrop-filter
-- HTML5 semantic markup
-- OpenWeatherMap API
-- Quotable API (with offline fallback)
+- **HTML5** (semantic structure)
+- **CSS3** (variables, flexbox, grid, animations)
+- **Vanilla JavaScript** (ES6+ OOP)
+- **OpenWeatherMap API**
+- **Quotable API** (fallback included)
+- **localStorage** persistence
+
+> **No frameworks. No dependencies. No build tools.**
 
 ---
 
@@ -116,32 +135,86 @@ All settings are saved to `localStorage` and persist between sessions.
 
 ```
 NeoDesk/
-├── index.html    # Main HTML structure
-├── style.css     # All styles (variables, themes, responsive)
-├── main.js       # Application logic (OOP, ES6 class)
-└── README.md     # This file
+├── index.html   # UI structure
+├── style.css    # Styling, themes, responsiveness
+├── main.js      # Application logic
+└── README.md
 ```
 
 ---
 
 ## 🌐 Deployment
 
-### GitHub Pages
+**GitHub Pages:**
+1. Push repository to GitHub.
+2. Go to **Settings → Pages**.
+3. Select branch: `main` (Root folder).
 
-```bash
-git push origin main
-```
+Your app will be available at:
+`https://<username>.github.io/NeoDesk/`
 
-Then enable GitHub Pages in your repo settings → `main` branch → root folder.
+---
 
-Your page will be live at: `https://<username>.github.io/NeoDesk/`
+## 🔒 Privacy
+
+NeoDesk is **fully local-first**:
+- ❌ No tracking
+- ❌ No analytics
+- ❌ No account system
+- ❌ No backend
+- ✅ **Everything stored in browser**
+
+---
+
+## 📱 Browser Support
+
+- Chrome (recommended)
+- Edge
+- Brave
+- Firefox
+- Opera
+
+---
+
+## 🗺 Roadmap
+
+### v4 (current)
+- Dashboard system
+- Terminal integration
+- Weather widget
+- Favorites system
+- Theme engine
+
+### v5 (planned)
+- Plugin system
+- Notes widget
+- Calendar widget
+- Drag & drop layout editor
+- Export / import settings
+- Multi-profile support
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome!
+You can:
+- Report bugs
+- Suggest features
+- Improve UI/UX
+- Add widgets
+- Optimize performance
 
 ---
 
 ## 📄 License
 
-MIT © NeonMC23
+**MIT License** © 2026 NeonMC23
 
 ---
 
-*Made with ❤️ and lots of ☕ — v4.0*
+## ⭐ Support
+
+If you like this project, consider giving it a **star**!
+
+> Made with **focus, minimalism, and performance** — **NeoDesk v4**
