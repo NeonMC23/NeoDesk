@@ -630,10 +630,10 @@ class NeoDesk {
   }
 
   /* ─── Search ─── */
-  searchQuery(engine, query, mode = 'default') {
+  searchQuery(engine, query, mode = "default") {
     const eng = this.engines[engine] || this.engines.google;
     const url = eng.modeUrl(query, mode);
-    window.open(url, '_blank');
+    window.location.href = url;
   }
 
   handleSearch(mode = 'default') {
